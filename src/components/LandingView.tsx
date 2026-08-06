@@ -82,169 +82,161 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
       </header>
 
       {/* Main Single-Screen Content Grid */}
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 1.5rem', overflow: 'hidden' }}>
-        <div style={{ maxWidth: '1250px', width: '100%', display: 'grid', gridTemplateColumns: 'minmax(320px, 420px) minmax(380px, 1fr)', gap: '2rem', alignItems: 'center' }}>
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '1rem 2.5rem', overflow: 'hidden' }}>
+        <div style={{ maxWidth: '1400px', width: '100%', display: 'grid', gridTemplateColumns: 'minmax(460px, 600px) 1fr', gap: '3rem', alignItems: 'center', height: '100%' }}>
           
-          {/* LEFT SIDE: LIVE PARTY LAUNCHPAD Container */}
-          <div className="modern-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)' }}>
+          {/* LEFT SIDE: Hero Info + Enlarge LIVE PARTY LAUNCHPAD Container */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', justifyContent: 'center' }}>
+            
+            {/* Top Text Content above Launchpad */}
             <div>
-              <div className="modern-badge modern-badge-pink" style={{ marginBottom: '0.4rem', fontSize: '0.75rem' }}>
-                LIVE PARTY LAUNCHPAD
+              <div className="modern-badge modern-badge-indigo floating-element" style={{ marginBottom: '0.75rem', fontSize: '0.8rem' }}>
+                Real-Time Party Stage • No App Download Needed
               </div>
-              <h2 style={{ fontSize: '1.5rem', margin: '0 0 0.2rem 0', fontWeight: 800 }}>
-                Get Started
-              </h2>
-              <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.82rem' }}>
-                Host the TV stage player or join as a mobile remote controller.
+              
+              <h1 style={{ fontSize: '2.4rem', lineHeight: 1.15, margin: '0 0 0.6rem 0', fontWeight: 900, background: 'linear-gradient(180deg, #ffffff 0%, #FFFFFB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 0 30px rgba(255, 255, 251, 0.15)' }}>
+                Turn Any TV or Laptop into a Full Karaoke Stage
+              </h1>
+
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.45, margin: 0 }}>
+                Stream 4K YouTube karaoke tracks on your main TV screen while guests search songs, request tracks, and queue music live directly from their mobile phones.
               </p>
             </div>
 
-            {actionError && (
-              <div style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#fca5a5', padding: '0.5rem 0.75rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                {actionError}
-              </div>
-            )}
-
-            {/* Selector Tabs */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', background: 'rgba(255, 255, 255, 0.05)', padding: '3px', borderRadius: '8px' }}>
-              <button
-                type="button"
-                onClick={() => setActiveTab('host')}
-                style={{
-                  padding: '0.45rem',
-                  borderRadius: '6px',
-                  border: 'none',
-                  background: activeTab === 'host' ? 'var(--primary-gradient)' : 'transparent',
-                  color: activeTab === 'host' ? '#030712' : 'var(--text-secondary)',
-                  fontWeight: 700,
-                  fontSize: '0.82rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                Host Stage
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('join')}
-                style={{
-                  padding: '0.45rem',
-                  borderRadius: '6px',
-                  border: 'none',
-                  background: activeTab === 'join' ? 'var(--primary-gradient)' : 'transparent',
-                  color: activeTab === 'join' ? '#030712' : 'var(--text-secondary)',
-                  fontWeight: 700,
-                  fontSize: '0.82rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                Join Remote
-              </button>
-            </div>
-
-            {/* Tab Form Content */}
-            {activeTab === 'host' ? (
-              <form onSubmit={handleHostSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div>
-                  <label htmlFor="hostNameInput" style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
-                    HOST DISPLAY NAME
-                  </label>
-                  <input
-                    id="hostNameInput"
-                    type="text"
-                    value={hostName}
-                    onChange={(e) => setHostName(e.target.value)}
-                    placeholder="e.g. Alex (Stage TV)"
-                    className="modern-input"
-                    style={{ padding: '0.7rem 0.9rem', fontSize: '0.88rem' }}
-                    required
-                  />
+            {/* LIVE PARTY LAUNCHPAD Container (Expanded width & height) */}
+            <div className="modern-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.75)', minHeight: '380px' }}>
+              <div>
+                <div className="modern-badge modern-badge-pink" style={{ marginBottom: '0.5rem', fontSize: '0.8rem' }}>
+                  LIVE PARTY LAUNCHPAD
                 </div>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0, lineHeight: 1.35 }}>
-                  Creates a stage TV room with video player, live queue sync, and scannable guest QR code.
+                <h2 style={{ fontSize: '1.65rem', margin: '0 0 0.25rem 0', fontWeight: 800 }}>
+                  Get Started
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.88rem' }}>
+                  Host the TV stage player or join as a mobile remote controller.
                 </p>
-                <button type="submit" className="button-primary" style={{ width: '100%', padding: '0.7rem 1.2rem', fontSize: '0.9rem' }} disabled={loadingAction}>
-                  {loadingAction ? 'Creating Room...' : 'Launch Stage Room'}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleJoinSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div>
-                  <label htmlFor="joinCodeInput" style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
-                    4-LETTER ROOM CODE
-                  </label>
-                  <input
-                    id="joinCodeInput"
-                    type="text"
-                    value={joinCode}
-                    onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                    placeholder="ABCD"
-                    maxLength={4}
-                    className="modern-input"
-                    style={{
-                      padding: '0.65rem',
-                      fontSize: '1.1rem',
-                      letterSpacing: '4px',
-                      textAlign: 'center',
-                      fontWeight: 800,
-                      textTransform: 'uppercase'
-                    }}
-                    required
-                  />
+              </div>
+
+              {actionError && (
+                <div style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#fca5a5', padding: '0.6rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem' }}>
+                  {actionError}
                 </div>
-                <div>
-                  <label htmlFor="joinNameInput" style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
-                    YOUR NAME
-                  </label>
-                  <input
-                    id="joinNameInput"
-                    type="text"
-                    value={joinName}
-                    onChange={(e) => setJoinName(e.target.value)}
-                    placeholder="e.g. Jordan"
-                    className="modern-input"
-                    style={{ padding: '0.65rem 0.9rem', fontSize: '0.88rem' }}
-                    required
-                  />
-                </div>
-                <button type="submit" className="button-secondary" style={{ width: '100%', padding: '0.7rem 1.2rem', fontSize: '0.9rem' }} disabled={loadingAction}>
-                  {loadingAction ? 'Joining Room...' : 'Join Remote Controller'}
+              )}
+
+              {/* Selector Tabs */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.05)', padding: '4px', borderRadius: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('host')}
+                  style={{
+                    padding: '0.6rem',
+                    borderRadius: '7px',
+                    border: 'none',
+                    background: activeTab === 'host' ? 'var(--primary-gradient)' : 'transparent',
+                    color: activeTab === 'host' ? '#030712' : 'var(--text-secondary)',
+                    fontWeight: 700,
+                    fontSize: '0.88rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Host Stage
                 </button>
-              </form>
-            )}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('join')}
+                  style={{
+                    padding: '0.6rem',
+                    borderRadius: '7px',
+                    border: 'none',
+                    background: activeTab === 'join' ? 'var(--primary-gradient)' : 'transparent',
+                    color: activeTab === 'join' ? '#030712' : 'var(--text-secondary)',
+                    fontWeight: 700,
+                    fontSize: '0.88rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Join Remote
+                </button>
+              </div>
+
+              {/* Tab Form Content */}
+              {activeTab === 'host' ? (
+                <form onSubmit={handleHostSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, justifyContent: 'space-between' }}>
+                  <div>
+                    <label htmlFor="hostNameInput" style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
+                      HOST DISPLAY NAME
+                    </label>
+                    <input
+                      id="hostNameInput"
+                      type="text"
+                      value={hostName}
+                      onChange={(e) => setHostName(e.target.value)}
+                      placeholder="e.g. Alex (Stage TV)"
+                      className="modern-input"
+                      style={{ padding: '0.8rem 1rem', fontSize: '0.95rem' }}
+                      required
+                    />
+                  </div>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: 0, lineHeight: 1.4 }}>
+                    Creates a stage TV room with video player, live queue sync, and scannable guest QR code.
+                  </p>
+                  <button type="submit" className="button-primary" style={{ width: '100%', padding: '0.85rem 1.4rem', fontSize: '0.95rem' }} disabled={loadingAction}>
+                    {loadingAction ? 'Creating Room...' : 'Launch Stage Room'}
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleJoinSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', flex: 1, justifyContent: 'space-between' }}>
+                  <div>
+                    <label htmlFor="joinCodeInput" style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
+                      4-LETTER ROOM CODE
+                    </label>
+                    <input
+                      id="joinCodeInput"
+                      type="text"
+                      value={joinCode}
+                      onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                      placeholder="ABCD"
+                      maxLength={4}
+                      className="modern-input"
+                      style={{
+                        padding: '0.75rem',
+                        fontSize: '1.25rem',
+                        letterSpacing: '4px',
+                        textAlign: 'center',
+                        fontWeight: 800,
+                        textTransform: 'uppercase'
+                      }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="joinNameInput" style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
+                      YOUR NAME
+                    </label>
+                    <input
+                      id="joinNameInput"
+                      type="text"
+                      value={joinName}
+                      onChange={(e) => setJoinName(e.target.value)}
+                      placeholder="e.g. Jordan"
+                      className="modern-input"
+                      style={{ padding: '0.75rem 1rem', fontSize: '0.95rem' }}
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="button-secondary" style={{ width: '100%', padding: '0.85rem 1.4rem', fontSize: '0.95rem' }} disabled={loadingAction}>
+                    {loadingAction ? 'Joining Room...' : 'Join Remote Controller'}
+                  </button>
+                </form>
+              )}
+            </div>
+
           </div>
 
-          {/* RIGHT SIDE: Hero Content Showcase */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-            <div className="modern-badge modern-badge-indigo floating-element" style={{ alignSelf: 'flex-start', fontSize: '0.75rem' }}>
-              Real-Time Party Stage • No App Download Needed
-            </div>
-            
-            <h1 style={{ fontSize: '2.6rem', lineHeight: 1.12, margin: 0, fontWeight: 900, background: 'linear-gradient(180deg, #ffffff 0%, #FFFFFB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 0 30px rgba(255, 255, 251, 0.15)' }}>
-              Turn Any TV or Laptop into a Full Karaoke Stage
-            </h1>
-
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.98rem', lineHeight: 1.45, margin: 0 }}>
-              Stream 4K YouTube karaoke tracks on your main TV screen while guests search songs, request tracks, and queue music live directly from their mobile phones.
-            </p>
-
-            {/* Compact Highlight Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginTop: '0.25rem' }}>
-              <div className="modern-card" style={{ padding: '0.85rem', textAlign: 'left' }}>
-                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#FFFFFB', marginBottom: '0.2rem' }}>Instant QR Join</div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', lineHeight: 1.35 }}>Scan TV code with smartphone camera</div>
-              </div>
-              <div className="modern-card" style={{ padding: '0.85rem', textAlign: 'left' }}>
-                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#FFFFFB', marginBottom: '0.2rem' }}>YouTube Library</div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', lineHeight: 1.35 }}>Search millions of karaoke tracks</div>
-              </div>
-              <div className="modern-card" style={{ padding: '0.85rem', textAlign: 'left' }}>
-                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#FFFFFB', marginBottom: '0.2rem' }}>Live Queue Sync</div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', lineHeight: 1.35 }}>Real-time mobile request updates</div>
-              </div>
-            </div>
-          </div>
+          {/* RIGHT SIDE: Reserved empty area for your custom plans */}
+          <div style={{ width: '100%', height: '100%' }} />
 
         </div>
       </main>
