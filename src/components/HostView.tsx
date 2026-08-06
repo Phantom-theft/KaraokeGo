@@ -120,14 +120,9 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   }
 
   if (loading) return (
-    <div className="container modern-card loading-overlay" style={{ maxWidth: '600px', margin: '4rem auto' }}>
-      <div className="loader-spinner-container">
-        <div className="loader-spinner-ring"></div>
-        <div className="loader-spinner-ring-inner"></div>
-        <div className="loader-glow-core"></div>
-      </div>
-      <div className="loader-text">Loading Host Stage...</div>
-      <div className="loader-subtext">Connecting to KaraokeGo live room</div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1rem' }}>
+      <div className="simple-spinner" />
+      <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0 }}>Loading host stage...</p>
     </div>
   );
   if (error) return <div className="container modern-card" style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center', padding: '3rem' }}><h2>Error: {error}</h2></div>;
@@ -151,7 +146,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
         justifyContent: 'space-between',
         padding: '0.6rem 1.25rem',
         background: 'rgba(3, 7, 18, 0.95)',
-        borderBottom: '1px solid rgba(0, 243, 255, 0.2)',
+        borderBottom: '1px solid rgba(255, 255, 251, 0.2)',
         backdropFilter: 'blur(12px)',
         flexShrink: 0,
         zIndex: 10,
@@ -160,14 +155,14 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           <span style={{
             fontSize: '1.4rem',
             fontWeight: 900,
-            background: 'linear-gradient(135deg, #ffffff, #00f3ff)',
+            background: 'linear-gradient(135deg, #ffffff, #FFFFFB)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             letterSpacing: '-0.5px',
           }}>KaraokeGo</span>
           <div style={{ width: '1px', height: '24px', background: 'rgba(0, 243, 255, 0.2)' }} />
           <span className="modern-badge modern-badge-indigo" style={{ fontSize: '0.7rem' }}>HOST</span>
-          <span style={{ fontWeight: 800, fontSize: '0.95rem', letterSpacing: '2px', color: '#00f3ff' }}>
+          <span style={{ fontWeight: 800, fontSize: '0.95rem', letterSpacing: '2px', color: '#FFFFFB' }}>
             {roomCode}
           </span>
         </div>
@@ -233,7 +228,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 color: 'var(--text-secondary)',
-                background: 'radial-gradient(ellipse at center, rgba(0, 243, 255, 0.08) 0%, #030712 100%)',
+                background: 'radial-gradient(ellipse at center, rgba(255, 255, 251, 0.06) 0%, #030712 100%)',
               }}>
                 <h2 style={{ margin: 0, fontWeight: 800, color: 'var(--text-primary)', fontSize: '1.6rem' }}>
                   Stage is Empty
@@ -252,7 +247,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               gap: '1rem',
               padding: '0.75rem 1.25rem',
               background: 'rgba(3, 7, 18, 0.96)',
-              borderTop: '1px solid rgba(0, 243, 255, 0.2)',
+              borderTop: '1px solid rgba(255, 255, 251, 0.2)',
               backdropFilter: 'blur(8px)',
               flexShrink: 0,
             }}>
@@ -267,7 +262,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '1px' }}>
                   {currentSong.artist} &nbsp;·&nbsp;
-                  <span style={{ color: '#00f3ff' }}>added by {currentSong.addedBy}</span>
+                  <span style={{ color: '#BEB8AF' }}>added by {currentSong.addedBy}</span>
                   &nbsp;·&nbsp;
                   <span style={{ color: 'var(--text-muted)' }}>
                     {formatTime(room.playback.currentTime)} / {formatTime(currentSong.duration || 240)}
@@ -306,13 +301,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           display: 'flex',
           flexDirection: 'column',
           background: 'rgba(3, 7, 18, 0.98)',
-          borderLeft: '1px solid rgba(0, 243, 255, 0.15)',
+          borderLeft: '1px solid rgba(255, 255, 251, 0.12)',
           overflow: 'hidden',
         }}>
 
           <div style={{
             display: 'flex',
-            borderBottom: '1px solid rgba(0, 243, 255, 0.15)',
+            borderBottom: '1px solid rgba(255, 255, 251, 0.12)',
             flexShrink: 0,
           }}>
             {(['search', 'queue'] as const).map(tab => (
@@ -328,8 +323,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   letterSpacing: '0.5px',
                   border: 'none',
                   background: 'transparent',
-                  color: selectedTab === tab ? '#00f3ff' : 'var(--text-muted)',
-                  borderBottom: selectedTab === tab ? '2px solid #00f3ff' : '2px solid transparent',
+                  color: selectedTab === tab ? '#FFFFFB' : 'var(--text-muted)',
+                  borderBottom: selectedTab === tab ? '2px solid #FFFFFB' : '2px solid transparent',
                   cursor: 'pointer',
                   transition: 'color 0.2s, border-color 0.2s',
                 }}
@@ -353,7 +348,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   style={{ marginBottom: '0.5rem' }}
                 />
                 {isSearching && (
-                  <p style={{ color: '#00f3ff', fontSize: '0.85rem', textAlign: 'center', margin: '0.5rem 0' }}>Searching YouTube...</p>
+                  <p style={{ color: '#FFFFFB', fontSize: '0.85rem', textAlign: 'center', margin: '0.5rem 0' }}>Searching YouTube...</p>
                 )}
                 {!isSearching && searchQuery && searchResults.length === 0 && (
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textAlign: 'center' }}>No results found.</p>
@@ -368,7 +363,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                       padding: '0.55rem 0.75rem',
                       background: 'rgba(255,255,255,0.03)',
                       borderRadius: '10px',
-                      border: '1px solid rgba(0, 243, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 251, 0.1)',
                     }}
                   >
                     <img src={song.thumbnail} alt={song.title} style={{ width: '48px', height: '36px', objectFit: 'cover', borderRadius: '6px', marginRight: '0.5rem' }} />
@@ -412,13 +407,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           padding: '0.6rem 0.75rem',
-                          background: isCurrent ? 'rgba(0, 243, 255, 0.12)' : 'rgba(255,255,255,0.03)',
+                          background: isCurrent ? 'rgba(255, 255, 251, 0.1)' : 'rgba(255,255,255,0.03)',
                           borderRadius: '10px',
-                          border: isCurrent ? '1px solid rgba(0, 243, 255, 0.4)' : '1px solid rgba(255,255,255,0.06)',
+                          border: isCurrent ? '1px solid rgba(255, 255, 251, 0.4)' : '1px solid rgba(255,255,255,0.06)',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0 }}>
-                          <span style={{ fontWeight: 800, fontSize: '0.8rem', color: isCurrent ? '#00f3ff' : 'var(--text-muted)', flexShrink: 0 }}>
+                          <span style={{ fontWeight: 800, fontSize: '0.8rem', color: isCurrent ? '#FFFFFB' : 'var(--text-muted)', flexShrink: 0 }}>
                             {isCurrent ? '►' : index + 1}
                           </span>
                           <div style={{ minWidth: 0 }}>
@@ -477,17 +472,17 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           padding: '1rem',
         }}>
           <div className="modern-card" style={{ maxWidth: '360px', width: '100%', textAlign: 'center', background: '#090d16', padding: '2rem' }}>
-            <h2 style={{ marginTop: 0, fontSize: '1.4rem', fontWeight: 800, color: '#00f3ff' }}>Join Stage Room</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
+            <h2 style={{ marginTop: 0, fontSize: '1.4rem', fontWeight: 800, color: '#FFFFFB' }}>Join Stage Room</h2>
+            <p style={{ color: '#BEB8AF', fontSize: '0.88rem' }}>
               Scan with your mobile camera to join as a participant.
             </p>
-            <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '16px', display: 'inline-block', margin: '1.25rem 0', boxShadow: '0 10px 30px rgba(0,243,255,0.2)' }}>
+            <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '16px', display: 'inline-block', margin: '1.25rem 0', boxShadow: '0 10px 30px rgba(255,255,251,0.15)' }}>
               <QRCodeSVG value={joinUrl} size={180} />
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, letterSpacing: '5px', color: '#00f3ff', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800, letterSpacing: '5px', color: '#FFFFFB', marginBottom: '0.5rem' }}>
               {roomCode}
             </div>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', wordBreak: 'break-all' }}>{joinUrl}</p>
+            <p style={{ fontSize: '0.72rem', color: '#BEB8AF', wordBreak: 'break-all' }}>{joinUrl}</p>
             <button onClick={() => setShowQrModal(false)} className="button-primary" style={{ width: '100%', marginTop: '1.25rem' }}>
               Close
             </button>

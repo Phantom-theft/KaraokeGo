@@ -104,14 +104,9 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
   const sortedQueue = room ? Object.values(room.queue).sort((a, b) => a.timestamp - b.timestamp) : [];
 
   if (loading) return (
-    <div className="container modern-card loading-overlay" style={{ maxWidth: '500px', margin: '4rem auto' }}>
-      <div className="loader-spinner-container">
-        <div className="loader-spinner-ring"></div>
-        <div className="loader-spinner-ring-inner"></div>
-        <div className="loader-glow-core"></div>
-      </div>
-      <div className="loader-text">Connecting...</div>
-      <div className="loader-subtext">Joining KaraokeGo room {roomCode}</div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1rem' }}>
+      <div className="simple-spinner" />
+      <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0 }}>Connecting to room {roomCode}...</p>
     </div>
   );
   if (error) return <div className="container modern-card" style={{ maxWidth: '500px', margin: '4rem auto', textAlign: 'center', padding: '3rem' }}><h2>Error: {error}</h2><button className="button-primary" onClick={onLeave} style={{ marginTop: '1rem' }}>Back to Home</button></div>;
@@ -124,7 +119,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span className="modern-badge modern-badge-indigo">ROOM CODE</span>
-            <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '2px', color: '#00f3ff' }}>{roomCode}</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '2px', color: '#FFFFFB' }}>{roomCode}</span>
           </div>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             {userName} (Remote Controller)
@@ -138,7 +133,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
       {/* Now Playing Widget */}
       <div className="modern-card" style={{ marginBottom: '1.25rem', background: 'rgba(3, 7, 18, 0.7)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-          <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#00f3ff' }}>Playing on Stage</h3>
+          <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFB' }}>Playing on Stage</h3>
           <span className={room.playback.status === 'playing' ? 'modern-badge modern-badge-emerald' : 'modern-badge modern-badge-indigo'}>
             {room.playback.status === 'playing' ? 'PLAYING' : room.playback.status === 'paused' ? 'PAUSED' : 'IDLE'}
           </span>
@@ -156,7 +151,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
                 {currentSong.title}
               </div>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{currentSong.artist}</div>
-              <div style={{ fontSize: '0.75rem', color: '#00f3ff', marginTop: '2px', fontWeight: 500 }}>
+              <div style={{ fontSize: '0.75rem', color: '#BEB8AF', marginTop: '2px', fontWeight: 500 }}>
                 Requested by: {room.queue[room.playback.currentQueueId || '']?.addedBy || 'Host'}
               </div>
             </div>
@@ -217,7 +212,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxHeight: '420px', overflowY: 'auto' }}>
             {isSearching && (
-              <p style={{ color: '#00f3ff', fontSize: '0.85rem', textAlign: 'center', margin: '1rem 0' }}>Searching YouTube...</p>
+              <p style={{ color: '#FFFFFB', fontSize: '0.85rem', textAlign: 'center', margin: '1rem 0' }}>Searching YouTube...</p>
             )}
             {!isSearching && searchQuery && searchResults.length === 0 && (
               <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '1rem' }}>No songs matched your search.</p>
@@ -235,7 +230,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
                   padding: '0.6rem 0.8rem',
                   background: 'rgba(255, 255, 255, 0.03)',
                   borderRadius: '12px',
-                  border: '1px solid rgba(0, 243, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 251, 0.1)',
                   gap: '0.75rem'
                 }}
               >
@@ -260,7 +255,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
       {/* Tab 3: Real-Time Queue */}
       {selectedTab === 'queue' && (
         <div className="modern-card">
-          <h3 style={{ marginTop: 0, fontSize: '1.1rem', color: '#00f3ff' }}>Live Queue</h3>
+          <h3 style={{ marginTop: 0, fontSize: '1.1rem', color: '#FFFFFB' }}>Live Queue</h3>
           {sortedQueue.length === 0 ? (
             <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '1.5rem 0' }}>The queue is currently empty!</p>
           ) : (
@@ -275,21 +270,21 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
                       alignItems: 'center',
                       gap: '0.75rem',
                       padding: '0.65rem 0.85rem',
-                      background: isCurrent ? 'rgba(0, 243, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                      background: isCurrent ? 'rgba(255, 255, 251, 0.1)' : 'rgba(255, 255, 255, 0.03)',
                       borderRadius: '12px',
-                      border: isCurrent ? '1px solid rgba(0, 243, 255, 0.4)' : '1px solid rgba(255, 255, 255, 0.06)'
+                      border: isCurrent ? '1px solid rgba(255, 255, 251, 0.4)' : '1px solid rgba(255, 255, 255, 0.06)'
                     }}
                   >
-                    <span style={{ fontWeight: 700, color: isCurrent ? '#00f3ff' : 'var(--text-muted)', width: '18px', fontSize: '0.9rem' }}>
+                    <span style={{ fontWeight: 700, color: isCurrent ? '#FFFFFB' : 'var(--text-muted)', width: '18px', fontSize: '0.9rem' }}>
                       {index + 1}
                     </span>
                     <img src={item.thumbnail} alt={item.title} style={{ width: '50px', height: '38px', objectFit: 'cover', borderRadius: '6px' }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {item.title} {isCurrent && <span style={{ fontSize: '0.75rem', color: '#00f3ff' }}>(Now Playing)</span>}
+                        {item.title} {isCurrent && <span style={{ fontSize: '0.75rem', color: '#FFFFFB' }}>(Now Playing)</span>}
                       </div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.artist}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#00f3ff' }}>By: {item.addedBy}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#BEB8AF' }}>By: {item.addedBy}</div>
                     </div>
                     {item.addedBy === userName && !isCurrent && (
                       <button
