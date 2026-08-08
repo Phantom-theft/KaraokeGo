@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
+import heroImg from '../assets/img/img1.png';
 import { Hero } from '@/components/ui/tailwind-css-background-snippet';
 
 interface LandingViewProps {
@@ -73,32 +74,85 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
 
       {/* Solid color base behind gradient */}
       <div style={{ position: 'fixed', inset: 0, zIndex: -1, background: darkMode ? '#000000' : 'var(--bg-main)', transition: 'background 0.4s ease' }} />
-     
 
-      {/* ── Main Centered Hero Section ── */}
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1.5rem', position: 'relative', zIndex: 1 }}>
-        <div style={{ maxWidth: '640px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center', textAlign: 'center' }}>
-          
+      {/* ── Main Centered Hero Layout ── */}
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4.5rem 1.5rem 3.5rem 1.5rem', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '1100px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-          {/* Centered Party Launchpad Form Container */}
-          <div className="modern-card" style={{ width: '100%', padding: '2.25rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.4rem', textAlign: 'left', background: darkMode ? '#161b27' : undefined, boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.6)' : undefined, border: darkMode ? '1px solid rgba(255,255,255,0.08)' : undefined, transition: 'background 0.4s ease' }}>
+          {/* 1. Widescreen Karaoke Image Layered Behind the Main Card */}
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '-135px', position: 'relative', zIndex: 1 }}>
+            <div className="floating-element" style={{ width: '100%', maxWidth: '1060px', borderRadius: '36px', overflow: 'hidden' }}>
+              <img
+                src={heroImg}
+                alt="Karaoke Stage Preview"
+                style={{ width: '100%', height: 'auto', opacity: 0.88, maxHeight: '560px', objectFit: 'cover', display: 'block', borderRadius: '36px', border: 'none', boxShadow: 'none' }}
+              />
+            </div>
+          </div>
+
+          {/* 2. Main Bordered Container Overlapping Lower Part of Widescreen Image */}
+          <div
+            className="modern-card"
+            style={{
+              width: '100%',
+              maxWidth: '580px',
+              position: 'relative',
+              zIndex: 5,
+              padding: '2.75rem 2rem 2rem 2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.4rem',
+              textAlign: 'left',
+              background: darkMode ? '#161b27' : 'var(--bg-main)',
+              boxShadow: darkMode ? '0 12px 36px rgba(0,0,0,0.65)' : 'var(--shadow-raised)',
+              border: darkMode ? '1px solid rgba(124, 58, 237, 0.45)' : '1px solid rgba(194, 216, 216, 0.85)',
+              transition: 'background 0.4s ease, border-color 0.4s ease',
+            }}
+          >
+
+            {/* 3. "Karaoke Go" Title Overlapping Top Border Center */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: darkMode ? '#161b27' : 'var(--bg-main)',
+                padding: '0.3rem 1.4rem',
+                borderRadius: '9999px',
+                color: darkMode ? '#a78bfa' : '#7c3aed',
+                fontFamily: 'var(--font-heading)',
+                fontSize: '1.65rem',
+                fontWeight: 900,
+                letterSpacing: '-0.02em',
+                whiteSpace: 'nowrap',
+                boxShadow: darkMode ? '0 0 16px rgba(124, 58, 237, 0.4)' : 'var(--shadow-raised-sm)',
+                border: darkMode ? '1px solid rgba(124, 58, 237, 0.5)' : '1px solid rgba(194, 216, 216, 0.8)',
+                zIndex: 10,
+                transition: 'background 0.4s ease, color 0.4s ease',
+              }}
+            >
+              Karaoke Go
+            </div>
+
+            {/* STAGE LAUNCHPAD Header & Dark Mode Button */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <div className="modern-badge" style={{ marginBottom: '0.5rem', fontSize: '0.78rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#1e2736' : undefined, boxShadow: darkMode ? 'none' : undefined }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <div className="modern-badge" style={{ fontSize: '0.78rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#1e2736' : undefined, boxShadow: darkMode ? 'none' : undefined }}>
                   STAGE LAUNCHPAD
                 </div>
                 <button
                   onClick={() => setDarkMode(d => !d)}
                   title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                   style={{
-                    width: '42px',
-                    height: '42px',
+                    width: '38px',
+                    height: '38px',
                     borderRadius: '50%',
                     border: darkMode ? '2px solid rgba(124,58,237,0.5)' : '2px solid rgba(194,216,216,0.8)',
                     background: darkMode ? '#1e2736' : 'var(--bg-main)',
                     boxShadow: darkMode ? '0 0 12px rgba(124,58,237,0.3), inset 2px 2px 6px rgba(0,0,0,0.3)' : 'var(--shadow-raised-sm)',
                     cursor: 'pointer',
-                    fontSize: '1.2rem',
+                    fontSize: '1.1rem',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -107,15 +161,13 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
                   }}
                 >
                   {darkMode ? '☀️' : '🌙'}
-              </button>
+                </button>
               </div>
 
-              
-
-              <h2 style={{ fontSize: '1.75rem', margin: '0 0 0.25rem 0', fontWeight: 800, color: darkMode ? '#f1f5f9' : '#000000' }}>
+              <h2 style={{ fontSize: '1.65rem', margin: '0 0 0.25rem 0', fontWeight: 800, color: darkMode ? '#f1f5f9' : '#000000' }}>
                 {activeTab === 'host' ? 'Host a New Stage Room' : 'Join an Existing Party'}
               </h2>
-              <p style={{ color: darkMode ? '#94a3b8' : '#000000', margin: 0, fontSize: '0.9rem', fontWeight: 500 }}>
+              <p style={{ color: darkMode ? '#94a3b8' : '#000000', margin: 0, fontSize: '0.88rem', fontWeight: 500 }}>
                 {activeTab === 'host' ? 'Display the video player screen on your TV or monitor.' : 'Enter the 4-letter room code from the host TV screen.'}
               </p>
             </div>
@@ -241,18 +293,10 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
             )}
           </div>
 
-          {/* Headline + Description */}
-          <div>
-            
-            <h1 style={{ fontSize: '3rem', lineHeight: 1.1, margin: '0 0 0.85rem 0', fontWeight: 900, color: darkMode ? '#f1f5f9' : '#000000' }}>
-              Turn Any Screen into a Live Karaoke Stage
-            </h1>
-
-            <p style={{ color: darkMode ? '#cbd5e1' : '#000000', fontSize: '1.08rem', lineHeight: 1.6, margin: '0 auto', maxWidth: '560px', fontWeight: 600 }}>
-              Stream HD YouTube karaoke tracks on your TV or laptop while party guests use their mobile phones to search songs, request tracks, and control the queue in real-time.
-            </p>
-            
-          </div>
+          {/* Subtitle Pitch underneath */}
+          <p style={{ color: darkMode ? '#cbd5e1' : '#000000', fontSize: '0.95rem', lineHeight: 1.5, margin: '1.75rem 0 0 0', textAlign: 'center', fontWeight: 600 }}>
+            Turn Any Screen into a Live Karaoke Stage • Instant Phone Pairing
+          </p>
 
         </div>
       </main>
