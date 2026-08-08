@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
+import { Hero } from '@/components/ui/tailwind-css-background-snippet';
 
 interface LandingViewProps {
   onHost: (roomCode: string, userId: string, userName: string) => void;
@@ -11,6 +12,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
   const [joinCode, setJoinCode] = useState('');
   const [joinName, setJoinName] = useState('');
   const [activeTab, setActiveTab] = useState<'host' | 'join'>('host');
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -62,181 +64,195 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
   };
 
   return (
-    <div style={{ height: '100vh', width: '100vw', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'fixed', inset: 0 }}>
-      {/* Navbar Header */}
-      <header className="landing-nav" style={{ flexShrink: 0, padding: '0.65rem 1.75rem' }}>
-        <div className="landing-nav-inner" style={{ maxWidth: '1300px' }}>
-          <a href="#" className="brand-logo" style={{ fontSize: '1.3rem' }}>
-            KaraokeGo
-          </a>
+    <div className={darkMode ? 'dark-mode' : ''} style={{ minHeight: '100vh', width: '100vw', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'relative', color: darkMode ? '#e2e8f0' : '#000000', transition: 'color 0.4s ease' }}>
 
-          <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
-            <button onClick={() => setActiveTab('join')} className={activeTab === 'join' ? 'button-primary' : 'button-secondary'} style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}>
-              Join Remote
-            </button>
-            <button onClick={() => setActiveTab('host')} className={activeTab === 'host' ? 'button-primary' : 'button-secondary'} style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}>
-              Host Stage
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* ── Radial Gradient Background ── */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, opacity: 1, pointerEvents: 'none' }}>
+        <Hero variant={darkMode ? 'dark' : 'light'} />
+      </div>
 
-      {/* Main Single-Screen Content Grid */}
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '1rem 2.5rem', overflow: 'hidden' }}>
-        <div style={{ maxWidth: '1400px', width: '100%', display: 'grid', gridTemplateColumns: 'minmax(460px, 600px) 1fr', gap: '3rem', alignItems: 'center', height: '100%' }}>
+      {/* Solid color base behind gradient */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: -1, background: darkMode ? '#000000' : 'var(--bg-main)', transition: 'background 0.4s ease' }} />
+     
+
+      {/* ── Main Centered Hero Section ── */}
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1.5rem', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '640px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center', textAlign: 'center' }}>
           
-          {/* LEFT SIDE: Hero Info + Enlarge LIVE PARTY LAUNCHPAD Container */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', justifyContent: 'center' }}>
-            
-            {/* Top Text Content above Launchpad */}
-            <div>
-              <div className="modern-badge modern-badge-indigo floating-element" style={{ marginBottom: '0.75rem', fontSize: '0.8rem' }}>
-                Real-Time Party Stage • No App Download Needed
-              </div>
-              
-              <h1 style={{ fontSize: '2.4rem', lineHeight: 1.15, margin: '0 0 0.6rem 0', fontWeight: 900, background: 'linear-gradient(180deg, #ffffff 0%, #FFFFFB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 0 30px rgba(255, 255, 251, 0.15)' }}>
-                Turn Any TV or Laptop into a Full Karaoke Stage
-              </h1>
 
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.45, margin: 0 }}>
-                Stream 4K YouTube karaoke tracks on your main TV screen while guests search songs, request tracks, and queue music live directly from their mobile phones.
+          {/* Centered Party Launchpad Form Container */}
+          <div className="modern-card" style={{ width: '100%', padding: '2.25rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.4rem', textAlign: 'left', background: darkMode ? '#161b27' : undefined, boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.6)' : undefined, border: darkMode ? '1px solid rgba(255,255,255,0.08)' : undefined, transition: 'background 0.4s ease' }}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <div className="modern-badge" style={{ marginBottom: '0.5rem', fontSize: '0.78rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#1e2736' : undefined, boxShadow: darkMode ? 'none' : undefined }}>
+                  STAGE LAUNCHPAD
+                </div>
+                <button
+                  onClick={() => setDarkMode(d => !d)}
+                  title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    border: darkMode ? '2px solid rgba(124,58,237,0.5)' : '2px solid rgba(194,216,216,0.8)',
+                    background: darkMode ? '#1e2736' : 'var(--bg-main)',
+                    boxShadow: darkMode ? '0 0 12px rgba(124,58,237,0.3), inset 2px 2px 6px rgba(0,0,0,0.3)' : 'var(--shadow-raised-sm)',
+                    cursor: 'pointer',
+                    fontSize: '1.2rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
+                    flexShrink: 0,
+                  }}
+                >
+                  {darkMode ? '☀️' : '🌙'}
+              </button>
+              </div>
+
+              
+
+              <h2 style={{ fontSize: '1.75rem', margin: '0 0 0.25rem 0', fontWeight: 800, color: darkMode ? '#f1f5f9' : '#000000' }}>
+                {activeTab === 'host' ? 'Host a New Stage Room' : 'Join an Existing Party'}
+              </h2>
+              <p style={{ color: darkMode ? '#94a3b8' : '#000000', margin: 0, fontSize: '0.9rem', fontWeight: 500 }}>
+                {activeTab === 'host' ? 'Display the video player screen on your TV or monitor.' : 'Enter the 4-letter room code from the host TV screen.'}
               </p>
             </div>
 
-            {/* LIVE PARTY LAUNCHPAD Container (Expanded width & height) */}
-            <div className="modern-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.75)', minHeight: '380px' }}>
-              <div>
-                <div className="modern-badge modern-badge-pink" style={{ marginBottom: '0.5rem', fontSize: '0.8rem' }}>
-                  LIVE PARTY LAUNCHPAD
-                </div>
-                <h2 style={{ fontSize: '1.65rem', margin: '0 0 0.25rem 0', fontWeight: 800 }}>
-                  Get Started
-                </h2>
-                <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.88rem' }}>
-                  Host the TV stage player or join as a mobile remote controller.
-                </p>
+            {actionError && (
+              <div style={{ background: darkMode ? '#1e2736' : 'var(--bg-main)', boxShadow: 'var(--shadow-raised-sm)', border: '1px solid rgba(239, 68, 68, 0.4)', color: darkMode ? '#fca5a5' : '#000000', padding: '0.65rem 0.9rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700 }}>
+                {actionError}
               </div>
+            )}
 
-              {actionError && (
-                <div style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#fca5a5', padding: '0.6rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem' }}>
-                  {actionError}
-                </div>
-              )}
-
-              {/* Selector Tabs */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.05)', padding: '4px', borderRadius: '10px' }}>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('host')}
-                  style={{
-                    padding: '0.6rem',
-                    borderRadius: '7px',
-                    border: 'none',
-                    background: activeTab === 'host' ? 'var(--primary-gradient)' : 'transparent',
-                    color: activeTab === 'host' ? '#030712' : 'var(--text-secondary)',
-                    fontWeight: 700,
-                    fontSize: '0.88rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  Host Stage
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('join')}
-                  style={{
-                    padding: '0.6rem',
-                    borderRadius: '7px',
-                    border: 'none',
-                    background: activeTab === 'join' ? 'var(--primary-gradient)' : 'transparent',
-                    color: activeTab === 'join' ? '#030712' : 'var(--text-secondary)',
-                    fontWeight: 700,
-                    fontSize: '0.88rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  Join Remote
-                </button>
-              </div>
-
-              {/* Tab Form Content */}
-              {activeTab === 'host' ? (
-                <form onSubmit={handleHostSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, justifyContent: 'space-between' }}>
-                  <div>
-                    <label htmlFor="hostNameInput" style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
-                      HOST DISPLAY NAME
-                    </label>
-                    <input
-                      id="hostNameInput"
-                      type="text"
-                      value={hostName}
-                      onChange={(e) => setHostName(e.target.value)}
-                      placeholder="e.g. Alex (Stage TV)"
-                      className="modern-input"
-                      style={{ padding: '0.8rem 1rem', fontSize: '0.95rem' }}
-                      required
-                    />
-                  </div>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: 0, lineHeight: 1.4 }}>
-                    Creates a stage TV room with video player, live queue sync, and scannable guest QR code.
-                  </p>
-                  <button type="submit" className="button-primary" style={{ width: '100%', padding: '0.85rem 1.4rem', fontSize: '0.95rem' }} disabled={loadingAction}>
-                    {loadingAction ? 'Creating Room...' : 'Launch Stage Room'}
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleJoinSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', flex: 1, justifyContent: 'space-between' }}>
-                  <div>
-                    <label htmlFor="joinCodeInput" style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
-                      4-LETTER ROOM CODE
-                    </label>
-                    <input
-                      id="joinCodeInput"
-                      type="text"
-                      value={joinCode}
-                      onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                      placeholder="ABCD"
-                      maxLength={4}
-                      className="modern-input"
-                      style={{
-                        padding: '0.75rem',
-                        fontSize: '1.25rem',
-                        letterSpacing: '4px',
-                        textAlign: 'center',
-                        fontWeight: 800,
-                        textTransform: 'uppercase'
-                      }}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="joinNameInput" style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
-                      YOUR NAME
-                    </label>
-                    <input
-                      id="joinNameInput"
-                      type="text"
-                      value={joinName}
-                      onChange={(e) => setJoinName(e.target.value)}
-                      placeholder="e.g. Jordan"
-                      className="modern-input"
-                      style={{ padding: '0.75rem 1rem', fontSize: '0.95rem' }}
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="button-secondary" style={{ width: '100%', padding: '0.85rem 1.4rem', fontSize: '0.95rem' }} disabled={loadingAction}>
-                    {loadingAction ? 'Joining Room...' : 'Join Remote Controller'}
-                  </button>
-                </form>
-              )}
+            {/* Selector Tabs (Neumorphic Inset Pill) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', background: darkMode ? '#0f1117' : 'var(--bg-main)', boxShadow: darkMode ? 'inset 2px 2px 6px rgba(0,0,0,0.4)' : 'var(--shadow-inset)', padding: '6px', borderRadius: '14px' }}>
+              <button
+                type="button"
+                onClick={() => setActiveTab('host')}
+                style={{
+                  padding: '0.75rem',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: activeTab === 'host' ? (darkMode ? '#1e2736' : 'var(--bg-main)') : 'transparent',
+                  boxShadow: activeTab === 'host' ? (darkMode ? '0 2px 8px rgba(0,0,0,0.4)' : 'var(--shadow-raised-sm)') : 'none',
+                  color: darkMode ? '#e2e8f0' : '#000000',
+                  fontWeight: 800,
+                  fontSize: '0.92rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Host Stage
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('join')}
+                style={{
+                  padding: '0.75rem',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: activeTab === 'join' ? (darkMode ? '#1e2736' : 'var(--bg-main)') : 'transparent',
+                  boxShadow: activeTab === 'join' ? (darkMode ? '0 2px 8px rgba(0,0,0,0.4)' : 'var(--shadow-raised-sm)') : 'none',
+                  color: darkMode ? '#e2e8f0' : '#000000',
+                  fontWeight: 800,
+                  fontSize: '0.92rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Join Remote
+              </button>
             </div>
 
+            {/* Tab Form Content */}
+            {activeTab === 'host' ? (
+              <form onSubmit={handleHostSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+                <div>
+                  <label htmlFor="hostNameInput" style={{ display: 'block', marginBottom: '0.45rem', fontSize: '0.8rem', fontWeight: 800, color: darkMode ? '#94a3b8' : '#000000', letterSpacing: '0.05em' }}>
+                    HOST DISPLAY NAME
+                  </label>
+                  <input
+                    id="hostNameInput"
+                    type="text"
+                    value={hostName}
+                    onChange={(e) => setHostName(e.target.value)}
+                    placeholder="e.g. Alex (Stage TV)"
+                    className="modern-input"
+                    style={{ padding: '0.9rem 1.1rem', fontSize: '0.98rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#0f1117' : undefined, boxShadow: darkMode ? 'inset 2px 2px 6px rgba(0,0,0,0.5)' : undefined }}
+                    required
+                  />
+                </div>
+                <p style={{ color: darkMode ? '#64748b' : '#000000', fontSize: '0.84rem', margin: 0, lineHeight: 1.4, fontWeight: 500 }}>
+                  Creates a real-time room with full YouTube player, sync queue, and guest QR code.
+                </p>
+                <button type="submit" className="button-primary" style={{ width: '100%', padding: '0.95rem 1.5rem', fontSize: '1.05rem', color: '#ffffff' }} disabled={loadingAction}>
+                  {loadingAction ? 'Creating Stage...' : 'Launch Stage Room'}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleJoinSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label htmlFor="joinCodeInput" style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.8rem', fontWeight: 800, color: darkMode ? '#94a3b8' : '#000000', letterSpacing: '0.05em' }}>
+                    4-LETTER ROOM CODE
+                  </label>
+                  <input
+                    id="joinCodeInput"
+                    type="text"
+                    value={joinCode}
+                    onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                    placeholder="ABCD"
+                    maxLength={4}
+                    className="modern-input"
+                    style={{
+                      padding: '0.85rem',
+                      fontSize: '1.4rem',
+                      letterSpacing: '6px',
+                      textAlign: 'center',
+                      fontWeight: 900,
+                      textTransform: 'uppercase',
+                      color: darkMode ? '#e2e8f0' : '#000000',
+                      background: darkMode ? '#0f1117' : undefined,
+                      boxShadow: darkMode ? 'inset 2px 2px 6px rgba(0,0,0,0.5)' : undefined,
+                    }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="joinNameInput" style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.8rem', fontWeight: 800, color: darkMode ? '#94a3b8' : '#000000', letterSpacing: '0.05em' }}>
+                    YOUR NAME
+                  </label>
+                  <input
+                    id="joinNameInput"
+                    type="text"
+                    value={joinName}
+                    onChange={(e) => setJoinName(e.target.value)}
+                    placeholder="e.g. Jordan"
+                    className="modern-input"
+                    style={{ padding: '0.85rem 1.1rem', fontSize: '0.98rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#0f1117' : undefined, boxShadow: darkMode ? 'inset 2px 2px 6px rgba(0,0,0,0.5)' : undefined }}
+                    required
+                  />
+                </div>
+                <button type="submit" className="button-primary" style={{ width: '100%', padding: '0.95rem 1.5rem', fontSize: '1.05rem', color: '#ffffff' }} disabled={loadingAction}>
+                  {loadingAction ? 'Joining Room...' : 'Connect Remote Controller'}
+                </button>
+              </form>
+            )}
           </div>
 
-          {/* RIGHT SIDE: Reserved empty area for your custom plans */}
-          <div style={{ width: '100%', height: '100%' }} />
+          {/* Headline + Description */}
+          <div>
+            
+            <h1 style={{ fontSize: '3rem', lineHeight: 1.1, margin: '0 0 0.85rem 0', fontWeight: 900, color: darkMode ? '#f1f5f9' : '#000000' }}>
+              Turn Any Screen into a Live Karaoke Stage
+            </h1>
+
+            <p style={{ color: darkMode ? '#cbd5e1' : '#000000', fontSize: '1.08rem', lineHeight: 1.6, margin: '0 auto', maxWidth: '560px', fontWeight: 600 }}>
+              Stream HD YouTube karaoke tracks on your TV or laptop while party guests use their mobile phones to search songs, request tracks, and control the queue in real-time.
+            </p>
+            
+          </div>
 
         </div>
       </main>

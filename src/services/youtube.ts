@@ -125,11 +125,23 @@ export async function searchKaraokeTracks(userQuery: string): Promise<SongSearch
       if (results.length >= 20) break;
     }
 
-    // Karaoke-tagged videos first
-    results.sort((a, b) => (a.isKaraoke === b.isKaraoke ? 0 : a.isKaraoke ? -1 : 1));
+    // Verify embedding capability via YouTube oEmbed API for top results so non-embeddable videos are filtered out
+    const embeddableResults = (await Promise.all(
+      results.map(async (song) => {
+        try {
+          const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${song.id}&format=json`);
+          return res.ok ? song : null;
+        } catch (_) {
+          return song;
+        }
+      })
+    )).filter((s): s is SongSearchResult => s !== null);
 
-    console.log(`[InnerTube] Found ${results.length} results for "${query}"`);
-    return results;
+    // Karaoke-tagged videos first
+    embeddableResults.sort((a, b) => (a.isKaraoke === b.isKaraoke ? 0 : a.isKaraoke ? -1 : 1));
+
+    console.log(`[InnerTube] Found ${embeddableResults.length} embeddable results for "${query}"`);
+    return embeddableResults;
 
   } catch (e) {
     console.error('[InnerTube Search] Failed:', e);

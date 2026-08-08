@@ -16,17 +16,7 @@ import {
 import { db } from '../services/firebase';
 import type { RoomState, Song, QueueItem, Participant } from '../types';
 
-function buildFallbackRoom(code: string, hostName: string, hostId: string): RoomState {
-  return {
-    roomCode: code,
-    hostId,
-    playback: { status: 'idle', currentQueueId: null, currentTime: 0, lastUpdated: Date.now() },
-    participants: {
-      [hostId]: { id: hostId, name: hostName, isHost: true, joinedAt: Date.now() },
-    },
-    queue: {},
-  };
-}
+
 
 function readLocalRoom(code: string): RoomState | null {
   try {
@@ -35,7 +25,7 @@ function readLocalRoom(code: string): RoomState | null {
   } catch { return null; }
 }
 
-export function useRealtimeRoom(roomCode: string | null, userId: string | null) {
+export function useRealtimeRoom(roomCode: string | null, _userId: string | null) {
   const [room, setRoom] = useState<RoomState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
