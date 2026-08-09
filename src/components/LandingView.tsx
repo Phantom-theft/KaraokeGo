@@ -65,8 +65,20 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
   };
 
   return (
-    <div className={darkMode ? 'dark-mode' : ''} style={{ minHeight: '100vh', width: '100vw', display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'relative', color: darkMode ? '#e2e8f0' : '#000000', transition: 'color 0.4s ease' }}>
-
+    <div
+      className={darkMode ? 'dark-mode' : ''}
+      style={{
+        minHeight: '100vh',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        position: 'relative',
+        color: darkMode ? '#e2e8f0' : '#000000',
+        transition: 'color 0.4s ease',
+      }}
+    >
       {/* ── Radial Gradient Background ── */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, opacity: 1, pointerEvents: 'none' }}>
         <Hero variant={darkMode ? 'dark' : 'light'} />
@@ -76,29 +88,41 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
       <div style={{ position: 'fixed', inset: 0, zIndex: -1, background: darkMode ? '#000000' : 'var(--bg-main)', transition: 'background 0.4s ease' }} />
 
       {/* ── Main Centered Hero Layout ── */}
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4.5rem 1.5rem 3.5rem 1.5rem', position: 'relative', zIndex: 1 }}>
-        <div style={{ maxWidth: '1100px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <main className="landing-main" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+        <div className="landing-outer-wrapper" style={{ maxWidth: '1100px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-          {/* 1. Widescreen Karaoke Image Layered Behind the Main Card */}
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '-135px', position: 'relative', zIndex: 1 }}>
-            <div className="floating-element" style={{ width: '100%', maxWidth: '1060px', borderRadius: '36px', overflow: 'hidden' }}>
+          {/* 1. Karaoke Image centered above the Main Card */}
+          <div className="landing-hero-img-wrapper" style={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+            <div className="floating-element" style={{ width: '100%', maxWidth: '1060px', borderRadius: '36px', overflow: 'hidden', position: 'relative' }}>
               <img
                 src={heroImg}
                 alt="Karaoke Stage Preview"
-                style={{ width: '100%', height: 'auto', opacity: 0.88, maxHeight: '560px', objectFit: 'cover', display: 'block', borderRadius: '36px', border: 'none', boxShadow: 'none' }}
+                style={{ width: '100%', height: 'auto', opacity: 0.88, objectFit: 'cover', display: 'block', borderRadius: '36px', border: 'none', boxShadow: 'none' }}
+              />
+              {/* Bottom Gradient Fade Overlay (Dark/Violet Fade) */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  pointerEvents: 'none',
+                  borderRadius: '36px',
+                  background: darkMode
+                    ? 'linear-gradient(to bottom, rgba(22, 27, 39, 0) 35%, rgba(22, 27, 39, 0.6) 70%, rgba(22, 27, 39, 0.98) 100%)'
+                    : 'linear-gradient(to bottom, rgba(236, 248, 248, 0) 35%, rgba(236, 248, 248, 0.65) 70%, rgba(236, 248, 248, 0.98) 100%)',
+                  transition: 'background 0.4s ease',
+                }}
               />
             </div>
           </div>
 
           {/* 2. Main Bordered Container Overlapping Lower Part of Widescreen Image */}
           <div
-            className="modern-card"
+            className="modern-card landing-main-card"
             style={{
               width: '100%',
               maxWidth: '580px',
               position: 'relative',
               zIndex: 5,
-              padding: '2.75rem 2rem 2rem 2rem',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.4rem',
@@ -112,17 +136,16 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
 
             {/* 3. "Karaoke Go" Title Overlapping Top Border Center */}
             <div
+              className="landing-title-badge"
               style={{
                 position: 'absolute',
                 top: 0,
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 background: darkMode ? '#161b27' : 'var(--bg-main)',
-                padding: '0.3rem 1.4rem',
                 borderRadius: '9999px',
                 color: darkMode ? '#a78bfa' : '#7c3aed',
                 fontFamily: 'var(--font-heading)',
-                fontSize: '1.65rem',
                 fontWeight: 900,
                 letterSpacing: '-0.02em',
                 whiteSpace: 'nowrap',
@@ -137,7 +160,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
 
             {/* STAGE LAUNCHPAD Header & Dark Mode Button */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', gap: '0.75rem' }}>
                 <div className="modern-badge" style={{ fontSize: '0.78rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#1e2736' : undefined, boxShadow: darkMode ? 'none' : undefined }}>
                   STAGE LAUNCHPAD
                 </div>
@@ -147,6 +170,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
                   style={{
                     width: '38px',
                     height: '38px',
+                    minWidth: '38px',
                     borderRadius: '50%',
                     border: darkMode ? '2px solid rgba(124,58,237,0.5)' : '2px solid rgba(194,216,216,0.8)',
                     background: darkMode ? '#1e2736' : 'var(--bg-main)',
@@ -164,7 +188,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
                 </button>
               </div>
 
-              <h2 style={{ fontSize: '1.65rem', margin: '0 0 0.25rem 0', fontWeight: 800, color: darkMode ? '#f1f5f9' : '#000000' }}>
+              <h2 style={{ fontSize: 'clamp(1.3rem, 4vw, 1.65rem)', margin: '0 0 0.25rem 0', fontWeight: 800, color: darkMode ? '#f1f5f9' : '#000000' }}>
                 {activeTab === 'host' ? 'Host a New Stage Room' : 'Join an Existing Party'}
               </h2>
               <p style={{ color: darkMode ? '#94a3b8' : '#000000', margin: 0, fontSize: '0.88rem', fontWeight: 500 }}>
@@ -232,7 +256,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
                     onChange={(e) => setHostName(e.target.value)}
                     placeholder="e.g. Alex (Stage TV)"
                     className="modern-input"
-                    style={{ padding: '0.9rem 1.1rem', fontSize: '0.98rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#0f1117' : undefined, boxShadow: darkMode ? 'inset 2px 2px 6px rgba(0,0,0,0.5)' : undefined }}
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '0.9rem 1.1rem', fontSize: '0.98rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#0f1117' : undefined, boxShadow: darkMode ? 'inset 2px 2px 6px rgba(0,0,0,0.5)' : undefined }}
                     required
                   />
                 </div>
@@ -258,9 +282,11 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
                     maxLength={4}
                     className="modern-input"
                     style={{
+                      width: '100%',
+                      boxSizing: 'border-box',
                       padding: '0.85rem',
-                      fontSize: '1.4rem',
-                      letterSpacing: '6px',
+                      fontSize: 'clamp(1.1rem, 6vw, 1.4rem)',
+                      letterSpacing: 'clamp(3px, 1.5vw, 6px)',
                       textAlign: 'center',
                       fontWeight: 900,
                       textTransform: 'uppercase',
@@ -282,7 +308,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
                     onChange={(e) => setJoinName(e.target.value)}
                     placeholder="e.g. Jordan"
                     className="modern-input"
-                    style={{ padding: '0.85rem 1.1rem', fontSize: '0.98rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#0f1117' : undefined, boxShadow: darkMode ? 'inset 2px 2px 6px rgba(0,0,0,0.5)' : undefined }}
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '0.85rem 1.1rem', fontSize: '0.98rem', color: darkMode ? '#e2e8f0' : '#000000', background: darkMode ? '#0f1117' : undefined, boxShadow: darkMode ? 'inset 2px 2px 6px rgba(0,0,0,0.5)' : undefined }}
                     required
                   />
                 </div>
@@ -294,7 +320,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
           </div>
 
           {/* Subtitle Pitch underneath */}
-          <p style={{ color: darkMode ? '#cbd5e1' : '#000000', fontSize: '0.95rem', lineHeight: 1.5, margin: '1.75rem 0 0 0', textAlign: 'center', fontWeight: 600 }}>
+          <p style={{ color: darkMode ? '#cbd5e1' : '#000000', fontSize: 'clamp(0.82rem, 2.5vw, 0.95rem)', lineHeight: 1.5, margin: '1.75rem 0 0 0', textAlign: 'center', fontWeight: 600, padding: '0 0.5rem' }}>
             Turn Any Screen into a Live Karaoke Stage • Instant Phone Pairing
           </p>
 
