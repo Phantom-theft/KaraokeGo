@@ -391,79 +391,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
         .host-tab-btn:focus-visible, .host-icon-btn:focus-visible, .host-add-btn:focus-visible { outline: 2px solid var(--primary-light); outline-offset: 2px; }
       `}</style>
 
-      {/* ── Top Bar ── */}
-      <header style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0.8rem 1.5rem',
-        background: 'var(--bg-main)',
-        boxShadow: '0 4px 16px rgba(194, 216, 216, 0.6)',
-        borderBottom: 'var(--border-card)',
-        flexShrink: 0,
-        zIndex: 10,
-        gap: '1rem',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0 }}>
-          <span className="brand-logo" style={{ fontSize: '1.35rem', flexShrink: 0 }}>
-            <span style={{ color: 'var(--primary)' }}>Karaoke</span>Go
-          </span>
-          <div style={{ width: '1px', height: '22px', background: '#c2d8d8', flexShrink: 0 }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexShrink: 0 }}>
-            <span className="modern-badge modern-badge-indigo" style={{ fontSize: '0.7rem' }}>HOST</span>
-            <span style={{
-              fontWeight: 900,
-              fontSize: '1.05rem',
-              letterSpacing: '3px',
-              color: 'var(--primary-dark)',
-              background: 'var(--bg-main)',
-              boxShadow: 'var(--shadow-inset)',
-              padding: '0.25rem 0.7rem',
-              borderRadius: '8px',
-            }}>
-              {roomCode}
-            </span>
-          </div>
-        </div>
 
-        <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexShrink: 0 }}>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            fontSize: '0.82rem',
-            color: 'var(--text-secondary)',
-            fontWeight: 700,
-            padding: '0.3rem 0.7rem',
-            borderRadius: '9999px',
-            background: 'var(--bg-main)',
-            boxShadow: 'var(--shadow-inset)',
-          }}>
-            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: onlineCount > 0 ? '#10b981' : '#94a3b8', display: 'inline-block' }} />
-            {onlineCount} online
-          </span>
-          <button
-            onClick={() => setShowQrModal(true)}
-            className="button-primary host-icon-btn"
-            style={{ padding: '0.5rem 1.15rem', fontSize: '0.85rem', gap: '0.4rem' }}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM21 14v3M14 21h3M18 18h3v3h-3z" />
-            </svg>
-            QR Code
-          </button>
-          {onLeave && (
-            <button
-              onClick={onLeave}
-              className="button-secondary host-icon-btn"
-              style={{ padding: '0.5rem 1.15rem', fontSize: '0.85rem' }}
-            >
-              Exit
-            </button>
-          )}
-        </div>
-      </header>
 
       {/* ── Main Body: Video (left) + Sidebar (right) ── */}
       <div style={{
@@ -473,7 +401,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
         gap: 0,
       }}>
 
-        {/* ════════════ VIDEO STAGE ════════════ */}
+        {/* ════════════ ROUNDED VIDEO STAGE ════════════ */}
         <div style={{
           flex: '1 1 0',
           display: 'flex',
@@ -481,6 +409,10 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           background: '#0f172a',
           position: 'relative',
           overflow: 'hidden',
+          borderRadius: '24px',
+          border: '2px solid rgba(124, 58, 237, 0.35)',
+          boxShadow: '0 12px 36px rgba(0, 0, 0, 0.45)',
+          margin: '0.8rem 0.8rem 0.8rem 0.8rem',
         }}>
           <div style={{
             flex: 1,
@@ -819,7 +751,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             </div>
           </div>
 
-          {/* ── 3. PLAYBACK CONTROLS Panel ── */}
+          {/* ── 3. PLAYBACK CONTROLS Panel + INLINE VISIBLE QR CODE & EXIT ── */}
           <div style={{
             margin: '0.65rem 0.9rem 0.9rem 0.9rem',
             background: 'var(--bg-main)',
@@ -828,11 +760,16 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             borderRadius: '16px',
             padding: '0.85rem 1rem',
             flexShrink: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.6rem',
           }}>
-            <div style={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)', marginBottom: '0.65rem' }}>
-              Playback
+            <div style={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)' }}>
+              Playback & Controls
             </div>
-            <div style={{ height: '3px', width: '100%', background: 'rgba(194,216,216,0.5)', borderRadius: '9999px', marginBottom: '0.7rem' }}>
+
+            {/* Progress bar */}
+            <div style={{ height: '3px', width: '100%', background: 'rgba(194,216,216,0.5)', borderRadius: '9999px' }}>
               <div style={{
                 height: '100%',
                 width: `${progressPct}%`,
@@ -841,11 +778,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 transition: 'width 1s linear',
               }} />
             </div>
+
+            {/* Play/Pause & Skip Controls */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <button
                 onClick={handlePlayPause}
                 className="button-primary host-icon-btn"
-                style={{ flex: 1, padding: '0.55rem 0.75rem', fontSize: '0.88rem' }}
+                style={{ flex: 1, padding: '0.5rem 0.7rem', fontSize: '0.85rem' }}
                 disabled={!currentSong}
               >
                 {isPlaying ? '⏸ Pause' : '▶ Play'}
@@ -853,27 +792,81 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               <button
                 onClick={handleSkipNext}
                 className="button-secondary host-icon-btn"
-                style={{ flex: 1, padding: '0.55rem 0.75rem', fontSize: '0.88rem' }}
+                style={{ flex: 1, padding: '0.5rem 0.7rem', fontSize: '0.85rem' }}
                 disabled={!currentSong}
               >
                 ⏭ Skip
               </button>
               <span
-                className={isPlaying ? 'modern-badge modern-badge-emerald' : 'modern-badge modern-badge-indigo'}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.82rem',
+                  color: 'var(--text-secondary)',
+                  fontWeight: 700,
+                  padding: '0.3rem 0.7rem',
+                  borderRadius: '9999px',
+                  background: 'var(--bg-main)',
+                  boxShadow: 'var(--shadow-inset)',
+                  flexShrink: 0,
+                }}
               >
-                {isPlaying && (
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', animation: 'livePulse 1.4s ease-in-out infinite' }} />
-                )}
-                {isPlaying ? 'LIVE' : room.playback.status === 'paused' ? 'PAUSED' : 'IDLE'}
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: onlineCount > 0 ? '#10b981' : '#94a3b8', display: 'inline-block' }} />
+                {onlineCount} online
               </span>
             </div>
+
             {currentSong && (
-              <div style={{ marginTop: '0.5rem', fontSize: '0.74rem', color: 'var(--text-secondary)', fontWeight: 500, display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', fontWeight: 500, display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontVariantNumeric: 'tabular-nums' }}>{formatTime(localCurrentTime)} / {formatTime(duration)}</span>
                 <span style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>added by {currentSong.addedBy}</span>
               </div>
             )}
+
+            {/* Inline Visible QR Code + Room Info + Exit Button */}
+            <div style={{
+              display: 'flex',
+              gap: '0.75rem',
+              alignItems: 'center',
+              paddingTop: '0.65rem',
+              borderTop: '1px solid rgba(194, 216, 216, 0.6)',
+              marginTop: '0.1rem',
+            }}>
+              {/* Always-Visible Inline QR Code */}
+              <div style={{
+                background: '#ffffff',
+                padding: '0.4rem',
+                borderRadius: '14px',
+                boxShadow: 'var(--shadow-raised-sm)',
+                border: '1px solid rgba(194, 216, 216, 0.6)',
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <QRCodeSVG value={joinUrl} size={76} />
+              </div>
+
+              {/* Room Code & Exit Button */}
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Scan to Join Stage
+                </div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '2px', color: 'var(--primary-dark)', margin: '-2px 0' }}>
+                  {roomCode}
+                </div>
+                {onLeave && (
+                  <button
+                    onClick={onLeave}
+                    className="button-secondary host-icon-btn"
+                    style={{ padding: '0.35rem 0.75rem', fontSize: '0.76rem', width: '100%', marginTop: '0.15rem' }}
+                  >
+                    Exit Stage
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
         </div>
