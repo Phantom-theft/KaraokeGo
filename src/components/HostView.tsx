@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
-import { searchKaraokeTracks, type SongSearchResult } from '../services/youtube';
+import { type SongSearchResult } from '../services/youtube';
 import type { Song, QueueItem } from '../types';
+import { SearchModal } from './SearchModal';
 
 // The YouTube IFrame Player API attaches itself to window at runtime.
 declare global {
@@ -21,10 +22,16 @@ interface HostViewProps {
 
 export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, onLeave }) => {
   const { room, loading, error, addToQueue, removeFromQueue, updatePlayback } = useRealtimeRoom(roomCode, userId);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<SongSearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [hostAddedSongId, setHostAddedSongId] = useState<string | null>(null);
+
+  const HOST_SUGGESTED_SONGS = [
+    { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', artist: 'Queen', thumbnail: 'https://i.ytimg.com/vi/fJ9rUzIMcZQ/hqdefault.jpg', duration: 354 },
+    { id: 'rYEDA3JcQqw', title: 'Rolling in the Deep', artist: 'Adele', thumbnail: 'https://i.ytimg.com/vi/rYEDA3JcQqw/hqdefault.jpg', duration: 228 },
+    { id: 'JGwWNGJdvx8', title: 'Shape of You', artist: 'Ed Sheeran', thumbnail: 'https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg', duration: 233 },
+    { id: 'L0MK7qz13bU', title: 'Sweet Caroline', artist: 'Neil Diamond', thumbnail: 'https://i.ytimg.com/vi/L0MK7qz13bU/hqdefault.jpg', duration: 202 },
+  ];
 
   // playerContainerRef is kept for direct/imperative access (e.g. inside
   // event handlers where we don't want a re-render). containerNode is the
@@ -41,15 +48,37 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const playerRef = useRef<any>(null);
   const [apiReady, setApiReady] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
-  // Whether the player is still muted (autoplay requires muted start; the
-  // user must tap once to unmute, which counts as the user gesture browsers
-  // require before allowing audio).
+  // Whether the player is still waiting for the host's first interaction.
+  // Browsers only allow unmuted playback to start from a real user gesture,
+  // so until this is cleared we deliberately keep the player PAUSED (via
+  // cueVideoById instead of loadVideoById — see the player-creation and
+  // load-video effects below) rather than silently autoplaying muted.
+  // It's real state (not just a ref) because a small play icon is rendered
+  // based on it — see the "Click-to-start" overlay in the JSX.
   const [needsUnmute, setNeedsUnmute] = useState(true);
+  const needsUnmuteRef = useRef(true);
+  useEffect(() => { needsUnmuteRef.current = needsUnmute; }, [needsUnmute]);
   // Always-current ref to room so timer callbacks don't capture stale state
   const roomRef = useRef(room);
   useEffect(() => { roomRef.current = room; }, [room]);
 
   const joinUrl = `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
+
+  // Fires on the host's first click of the play icon: unmutes, starts
+  // actual playback (the player was only cued/paused until now), and marks
+  // playback as 'playing' in the room so every other client stays in sync.
+  const handleStartPlayback = useCallback(() => {
+    if (playerRef.current?.unMute) {
+      playerRef.current.unMute();
+      playerRef.current.setVolume(100);
+      playerRef.current.playVideo();
+    }
+    setNeedsUnmute(false);
+    needsUnmuteRef.current = false;
+    if (roomRef.current && roomRef.current.playback.status !== 'playing') {
+      updatePlayback({ status: 'playing' });
+    }
+  }, [updatePlayback]);
 
   // Load the YouTube IFrame Player API once. We rely on its real onStateChange
   // (ENDED) event to know when a song actually finishes, instead of guessing
@@ -78,29 +107,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
     };
   }, []);
 
-  // Live YouTube search as user types
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      setIsSearching(true);
-      try {
-        const results = await searchKaraokeTracks(searchQuery);
-        setSearchResults(results);
-      } catch (err) {
-        console.error('Search error:', err);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
   const handleAddSong = (song: SongSearchResult) => {
+
     const songData: Song = {
       id: song.id,
       title: song.title,
@@ -113,6 +121,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
 
   const handlePlayPause = () => {
     if (!room) return;
+
     const currentlyPlaying = room.playback.status === 'playing';
     if (playerRef.current) {
       if (currentlyPlaying) {
@@ -135,6 +144,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const handleSkipNext = useCallback(() => {
     const currentRoom = roomRef.current;
     if (!currentRoom) return;
+
     // Stop audio immediately — otherwise the finished/skipped song can keep
     // playing underneath the "Up Next" countdown overlay for a moment.
     playerRef.current?.pauseVideo();
@@ -188,18 +198,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
 
   const currentSong = getCurrentSong();
   const sortedQueue = room ? Object.values(room.queue).sort((a, b) => a.timestamp - b.timestamp) : [];
-
-  // Wrapper to handle deleting from queue
-  const handleRemoveFromQueue = (queueId: string) => {
-    if (!room) return;
-
-    // If we're deleting the currently playing song, skip to next
-    if (room.playback.currentQueueId === queueId) {
-      handleSkipNext();
-    } else {
-      removeFromQueue(queueId);
-    }
-  };
+  const nextToPlaySong = sortedQueue.find(item => item.queueId !== room?.playback.currentQueueId) ?? null;
 
   // Auto-play next song whenever currentQueueId becomes null or invalid but queue is not empty.
   // Bails out while a countdown is in progress (countdown !== null) — otherwise this effect
@@ -250,13 +249,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
       // captions the video's uploader has forced on for everyone.
       host: 'https://www.youtube-nocookie.com',
       playerVars: {
-        autoplay: 1,
-        mute: 1,           // required: browsers block unmuted autoplay that
-                            // isn't triggered by a direct user gesture, and
-                            // this player is started from a Firebase-driven
-                            // effect, not a click. Starting muted lets
-                            // playback actually begin; see the "Tap to
-                            // unmute" overlay below for restoring sound.
+        autoplay: 0,        // don't auto-start — see cueVideoById below.
+                            // Playback only begins once the host clicks the
+                            // play icon (handleStartPlayback), which is also
+                            // the user gesture browsers require before audio
+                            // is allowed to start unmuted.
+        mute: 1,            // stays muted until handleStartPlayback runs;
+                            // harmless once unMute() is called from a real click.
         controls: 0,
         rel: 0,
         modestbranding: 1,
@@ -271,8 +270,16 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           console.log('[YT Player] onReady fired');
           setPlayerReady(true);
           if (currentSongRef.current) {
-            console.log('[YT Player] Loading initial song:', currentSongRef.current.id);
-            playerRef.current.loadVideoById(currentSongRef.current.id);
+            if (needsUnmuteRef.current) {
+              // cueVideoById loads the video WITHOUT playing it — the video
+              // stays visibly paused/stopped until the host clicks the play
+              // icon, instead of silently autoplaying muted.
+              console.log('[YT Player] Cueing initial song (waiting for host click):', currentSongRef.current.id);
+              playerRef.current.cueVideoById(currentSongRef.current.id);
+            } else {
+              console.log('[YT Player] Loading initial song:', currentSongRef.current.id);
+              playerRef.current.loadVideoById(currentSongRef.current.id);
+            }
           }
         },
         onStateChange: (event: any) => {
@@ -325,7 +332,12 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
     setLocalCurrentTime(0);
 
     if (currentSong) {
-      playerRef.current.loadVideoById(currentSong.id);
+      if (needsUnmuteRef.current) {
+        // Still waiting on the host's first click — cue only, don't play.
+        playerRef.current.cueVideoById(currentSong.id);
+      } else {
+        playerRef.current.loadVideoById(currentSong.id);
+      }
     } else if (typeof playerRef.current.stopVideo === 'function') {
       playerRef.current.stopVideo();
     }
@@ -391,8 +403,6 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
         .host-tab-btn:focus-visible, .host-icon-btn:focus-visible, .host-add-btn:focus-visible { outline: 2px solid var(--primary-light); outline-offset: 2px; }
       `}</style>
 
-
-
       {/* ── Main Body: Video (left) + Sidebar (right) ── */}
       <div style={{
         display: 'flex',
@@ -424,24 +434,29 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             />
 
+            {/* Click-to-start icon — small, not a full-screen blocker. The
+                player is only cued (paused) until this is clicked, so no
+                audio/video plays silently in the background beforehand.
+                This click is also the user gesture browsers require before
+                allowing unmuted playback. */}
             {currentSong && needsUnmute && countdown === null && (
               <button
-                onClick={() => {
-                  playerRef.current?.unMute();
-                  playerRef.current?.setVolume(100);
-                  setNeedsUnmute(false);
-                }}
+                onClick={handleStartPlayback}
+                aria-label="Start playback"
                 style={{
-                  position: 'absolute', inset: 0, zIndex: 15,
-                  background: 'rgba(15, 23, 42, 0.55)',
-                  border: 'none', cursor: 'pointer',
-                  display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center',
-                  color: '#ffffff', gap: '0.75rem',
+                  position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                  zIndex: 12,
+                  width: '64px', height: '64px', borderRadius: '50%',
+                  background: 'rgba(15, 23, 42, 0.8)',
+                  border: '2px solid rgba(255, 255, 255, 0.35)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 28px rgba(0, 0, 0, 0.45)',
                 }}
               >
-                <span style={{ fontSize: '2.5rem' }}>🔊</span>
-                <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>Tap to unmute</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" style={{ marginLeft: '3px' }}>
+                  <path d="M8 5v14l11-7z" />
+                </svg>
               </button>
             )}
 
@@ -584,6 +599,44 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           gap: '0',
         }}>
 
+          {/* ── 0. NEXT TO PLAY Panel ── */}
+          <div style={{
+            margin: '0.9rem 0.9rem 0 0.9rem',
+            background: 'var(--bg-main)',
+            boxShadow: 'var(--shadow-raised-sm)',
+            border: '2px solid rgba(124, 58, 237, 0.45)',
+            borderRadius: '16px',
+            flexShrink: 0,
+            overflow: 'hidden',
+          }}>
+            <div style={{ padding: '0.6rem 0.9rem 0.4rem 0.9rem', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)', borderBottom: '1px solid rgba(124,58,237,0.2)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span>🎵</span> Next to Play
+            </div>
+            <div style={{ padding: '0.6rem 0.8rem' }}>
+              {nextToPlaySong ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <img
+                    src={nextToPlaySong.thumbnail}
+                    alt={nextToPlaySong.title}
+                    style={{ width: '48px', height: '34px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0, border: '1px solid rgba(124,58,237,0.25)' }}
+                  />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {nextToPlaySong.title}
+                    </div>
+                    <div style={{ fontSize: '0.73rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                      {nextToPlaySong.addedBy}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '0.6rem 0', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>
+                  No upcoming song
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* ── 1. QUEUE Panel ── */}
           <div style={{
             margin: '0.9rem 0.9rem 0 0.9rem',
@@ -591,8 +644,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             boxShadow: 'var(--shadow-raised-sm)',
             border: 'var(--border-card)',
             borderRadius: '16px',
-            flexShrink: 0,
-            maxHeight: '220px',
+            flex: 1,
+            minHeight: '180px',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -644,13 +697,6 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                             </div>
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleRemoveFromQueue(item.queueId)}
-                          className="button-secondary"
-                          style={{ padding: '0.22rem 0.55rem', fontSize: '0.68rem', borderRadius: '8px', flexShrink: 0 }}
-                        >
-                          ✕
-                        </button>
                       </div>
                     );
                   })}
@@ -666,16 +712,15 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             boxShadow: 'var(--shadow-raised-sm)',
             border: 'var(--border-card)',
             borderRadius: '16px',
-            flex: 1,
+            flexShrink: 0,
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden',
           }}>
             <div style={{ padding: '0.65rem 0.9rem 0.4rem 0.9rem', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)', borderBottom: '1px solid rgba(194,216,216,0.4)', flexShrink: 0 }}>
               Search
             </div>
             <div style={{ padding: '0.6rem 0.7rem 0.4rem 0.7rem', flexShrink: 0 }}>
-              <div style={{ position: 'relative' }}>
+              <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setIsSearchModalOpen(true)}>
                 <svg
                   width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
                   style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
@@ -684,69 +729,84 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 </svg>
                 <input
                   type="text"
+                  readOnly
                   placeholder="Search song title or artist..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="modern-input"
-                  style={{ paddingLeft: '2.2rem', fontSize: '0.88rem' }}
+                  style={{ paddingLeft: '2.2rem', paddingRight: '2.2rem', fontSize: '0.88rem', cursor: 'pointer' }}
+                  onClick={() => setIsSearchModalOpen(true)}
                 />
+                <span style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.9rem' }}>
+                  🎤
+                </span>
               </div>
             </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0 0.7rem 0.7rem 0.7rem' }}>
-              {isSearching && (
-                <p style={{ color: 'var(--primary-dark)', fontSize: '0.83rem', fontWeight: 600, textAlign: 'center', margin: '0.6rem 0' }}>
-                  Searching YouTube…
-                </p>
-              )}
-              {!isSearching && !searchQuery && (
-                <div style={{ textAlign: 'center', padding: '1.5rem 1rem', color: 'var(--text-muted)' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 600 }}>Start typing to find a song</div>
-                </div>
-              )}
-              {!isSearching && searchQuery && searchResults.length === 0 && (
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.83rem', textAlign: 'center', padding: '1rem 0' }}>
-                  No results for "{searchQuery}".
-                </p>
-              )}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                {searchResults.map(song => (
-                  <div
-                    key={song.id}
-                    className="host-list-item"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.5rem 0.6rem',
-                      background: 'var(--bg-main)',
-                      boxShadow: 'var(--shadow-raised-sm)',
-                      borderRadius: '11px',
-                      border: 'var(--border-card)',
-                      transition: 'box-shadow 0.2s ease',
-                    }}
-                  >
-                    <img
-                      src={song.thumbnail}
-                      alt={song.title}
-                      style={{ width: '46px', height: '34px', objectFit: 'cover', borderRadius: '7px', marginRight: '0.55rem', flexShrink: 0 }}
-                    />
-                    <div style={{ flex: 1, minWidth: 0, marginRight: '0.45rem' }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.82rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {song.title}
+            {/* Suggested Songs 2×2 grid */}
+            <div style={{ padding: '0.5rem 0.7rem 0.7rem 0.7rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.55px', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                💡 Suggest Song
+              </div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '0.5rem',
+              }}>
+                {HOST_SUGGESTED_SONGS.map((song) => {
+                  const isAdded = hostAddedSongId === song.id;
+                  return (
+                    <div
+                      key={song.id}
+                      style={{
+                        border: '1px solid rgba(124,58,237,0.3)',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        background: 'var(--bg-main)',
+                        boxShadow: 'var(--shadow-raised-sm)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      {/* 16:9 Thumbnail */}
+                      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: '#000', overflow: 'hidden' }}>
+                        <img
+                          src={song.thumbnail}
+                          alt={song.title}
+                          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
                       </div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '1px' }}>
-                        {song.artist}
+                      {/* Card Body */}
+                      <div style={{ padding: '0.4rem 0.5rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
+                        <div style={{ fontWeight: 800, fontSize: '0.76rem', color: '#0f172a', lineHeight: 1.25, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                          {song.title}
+                        </div>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                          {song.artist}
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (isAdded) return;
+                            handleAddSong(song as any);
+                            setHostAddedSongId(song.id);
+                            setTimeout(() => setHostAddedSongId(null), 2000);
+                          }}
+                          className="button-primary"
+                          style={{
+                            marginTop: '0.25rem',
+                            padding: '0.3rem 0.5rem',
+                            fontSize: '0.7rem',
+                            borderRadius: '8px',
+                            width: '100%',
+                            justifyContent: 'center',
+                            opacity: isAdded ? 0.7 : 1,
+                            background: isAdded ? 'var(--primary-light)' : undefined,
+                            transition: 'all 0.2s ease',
+                          }}
+                        >
+                          {isAdded ? '✓ Added!' : '+ Add'}
+                        </button>
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleAddSong(song)}
-                      className="button-primary host-add-btn"
-                      style={{ padding: '0.28rem 0.65rem', fontSize: '0.73rem', borderRadius: '8px', flexShrink: 0, transition: 'transform 0.15s ease' }}
-                    >
-                      + Add
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -914,6 +974,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           </div>
         </div>
       )}
+
+      {/* Large 90vw x 85vh Search Modal */}
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        onAddSong={handleAddSong}
+      />
     </div>
   );
 };

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
-import { searchKaraokeTracks, type SongSearchResult } from '../services/youtube';
+import { type SongSearchResult } from '../services/youtube';
 import type { Song } from '../types';
+import { SearchModal } from './SearchModal';
 
 interface ParticipantViewProps {
   roomCode: string;
@@ -17,32 +18,9 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
   onLeave,
 }) => {
   const { room, loading, error, addToQueue, removeFromQueue } = useRealtimeRoom(roomCode, userId);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<SongSearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'search' | 'queue'>('search');
   const [addSuccessMessage, setAddSuccessMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      setIsSearching(true);
-      try {
-        const results = await searchKaraokeTracks(searchQuery);
-        setSearchResults(results);
-      } catch (err) {
-        console.error('Search error:', err);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   const handleAddSong = (song: SongSearchResult) => {
     const songData: Song = {
@@ -61,12 +39,6 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
     setTimeout(() => {
       setAddSuccessMessage(null);
     }, 3000);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const getCurrentSong = (): Song | null => {
@@ -174,7 +146,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
             transition: 'all 0.2s ease'
           }}
         >
-          Search
+          Search Library
         </button>
         <button
           onClick={() => setSelectedTab('queue')}
@@ -196,58 +168,35 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
         </button>
       </div>
 
-      {/* Tab 1: Song Search Library */}
+      {/* Tab 1: Song Search Bar Trigger */}
       {selectedTab === 'search' && (
-        <div className="modern-card">
-          <input
-            type="text"
-            placeholder="Search song title or artist..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="modern-input"
-            style={{ marginBottom: '1rem' }}
-          />
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '420px', overflowY: 'auto' }}>
-            {isSearching && (
-              <p style={{ color: 'var(--primary-dark)', fontWeight: 600, fontSize: '0.85rem', textAlign: 'center', margin: '1rem 0' }}>Searching YouTube...</p>
-            )}
-            {!isSearching && searchQuery && searchResults.length === 0 && (
-              <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '1rem' }}>No songs matched your search.</p>
-            )}
-            {!isSearching && !searchQuery && (
-              <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '1rem', fontSize: '0.85rem' }}>Type a song name above to search live YouTube karaoke tracks!</p>
-            )}
-            {searchResults.map(song => (
-              <div
-                key={song.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0.75rem',
-                  background: 'var(--bg-main)',
-                  boxShadow: 'var(--shadow-raised-sm)',
-                  borderRadius: '14px',
-                  border: 'var(--border-card)',
-                  gap: '0.75rem'
-                }}
-              >
-                <img src={song.thumbnail} alt={song.title} style={{ width: '56px', height: '42px', objectFit: 'cover', borderRadius: '8px' }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{song.title}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{song.artist} • {formatTime(song.duration)}</div>
-                </div>
-                <button
-                  onClick={() => handleAddSong(song)}
-                  className="button-primary"
-                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem', borderRadius: '10px' }}
-                >
-                  + Add
-                </button>
-              </div>
-            ))}
+        <div className="modern-card" style={{ padding: '1.75rem', textAlign: 'center' }}>
+          <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setIsSearchModalOpen(true)}>
+            <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.1rem', opacity: 0.7 }}>
+              🔎
+            </span>
+            <input
+              type="text"
+              readOnly
+              placeholder="Search songs or artists..."
+              className="modern-input"
+              style={{
+                cursor: 'pointer',
+                paddingLeft: '2.8rem',
+                paddingRight: '3rem',
+                fontSize: '1.02rem',
+                border: '2px solid rgba(124, 58, 237, 0.35)',
+              }}
+              onClick={() => setIsSearchModalOpen(true)}
+            />
+            <span style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.15rem' }}>
+              🎤
+            </span>
           </div>
+
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.86rem', marginTop: '1.1rem', fontWeight: 600 }}>
+            Click the search bar above to open the full Karaoke song library & voice search!
+          </p>
         </div>
       )}
 
@@ -302,6 +251,13 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
           )}
         </div>
       )}
+
+      {/* Large 90vw x 85vh Search Modal */}
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        onAddSong={handleAddSong}
+      />
     </div>
   );
 };
