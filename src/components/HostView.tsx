@@ -387,7 +387,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const onlineCount = Object.keys(room.participants).length;
 
   return (
-    <div style={{
+    <div className="host-page" style={{
       display: 'flex',
       flexDirection: 'column',
       height: '100vh',
@@ -404,7 +404,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
       `}</style>
 
       {/* ── Main Body: Video (left) + Sidebar (right) ── */}
-      <div style={{
+        <div style={{
         display: 'flex',
         flex: 1,
         overflow: 'hidden',
@@ -416,13 +416,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           flex: '1 1 0',
           display: 'flex',
           flexDirection: 'column',
-          background: '#0f172a',
+          background: '#0b1020',
           position: 'relative',
           overflow: 'hidden',
-          borderRadius: '24px',
-          border: '2px solid rgba(124, 58, 237, 0.35)',
-          boxShadow: '0 12px 36px rgba(0, 0, 0, 0.45)',
-          margin: '0.8rem 0.8rem 0.8rem 0.8rem',
+          borderRadius: '16px',
+          border: '1px solid rgba(148, 163, 184, 0.25)',
+          boxShadow: 'none',
+          margin: '0.75rem',
         }}>
           <div style={{
             flex: 1,
@@ -447,11 +447,11 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
                   zIndex: 12,
                   width: '64px', height: '64px', borderRadius: '50%',
-                  background: 'rgba(15, 23, 42, 0.8)',
-                  border: '2px solid rgba(255, 255, 255, 0.35)',
+                  background: 'rgba(15, 23, 42, 0.65)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer',
-                  boxShadow: '0 8px 28px rgba(0, 0, 0, 0.45)',
+                  boxShadow: 'none',
                 }}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" style={{ marginLeft: '3px' }}>
@@ -465,7 +465,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 position: 'absolute', inset: 0,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                background: 'radial-gradient(circle at center, #1e293b 0%, #0f172a 100%)',
+                background: 'rgba(11, 16, 32, 0.92)',
                 zIndex: 20,
                 animation: 'hostFadeIn 0.3s ease-out',
                 padding: '2rem',
@@ -474,7 +474,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 <div style={{
                   fontSize: '0.85rem',
                   fontWeight: 800,
-                  color: '#38bdf8',
+                  color: '#94a3b8',
                   letterSpacing: '3px',
                   textTransform: 'uppercase',
                   marginBottom: '1.1rem',
@@ -497,21 +497,21 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   color: '#94a3b8',
                   marginBottom: '2.25rem',
                 }}>
-                  Requested by <strong style={{ color: '#38bdf8', fontWeight: 700 }}>{nextUpInfo.addedBy}</strong>
+                  Requested by <strong style={{ color: '#cbd5e1', fontWeight: 700 }}>{nextUpInfo.addedBy}</strong>
                 </div>
                 <div style={{
                   width: '86px',
                   height: '86px',
                   borderRadius: '50%',
-                  border: '3px solid #38bdf8',
+                  border: '1px solid rgba(148, 163, 184, 0.35)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '2.75rem',
                   fontWeight: 900,
                   color: '#ffffff',
-                  boxShadow: '0 0 36px rgba(56, 189, 248, 0.45)',
-                  background: 'rgba(56, 189, 248, 0.1)',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}>
                   {countdown}
                 </div>
@@ -543,7 +543,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 <div style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '1.5rem', maxWidth: '380px' }}>
                   <strong style={{ color: '#ffffff' }}>"{currentSong.title}"</strong> cannot be played on external sites — the owner disabled embedding.
                 </div>
-                <div style={{ color: '#38bdf8', fontSize: '0.9rem', fontWeight: 700, marginBottom: '1.25rem' }}>
+                <div style={{ color: '#cbd5e1', fontSize: '0.9rem', fontWeight: 700, marginBottom: '1.25rem' }}>
                   Auto-skipping to next song in 3 seconds…
                 </div>
                 <button
@@ -568,9 +568,9 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 <div style={{
                   width: '64px', height: '64px', borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'rgba(124, 58, 237, 0.12)', marginBottom: '1.25rem',
+                  background: 'rgba(148, 163, 184, 0.14)', marginBottom: '1.25rem',
                 }}>
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
                   </svg>
                 </div>
@@ -594,7 +594,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           display: 'flex',
           flexDirection: 'column',
           background: 'var(--bg-main)',
-          borderLeft: 'var(--border-card)',
+            borderLeft: '1px solid rgba(148, 163, 184, 0.25)',
           overflow: 'hidden',
           gap: '0',
         }}>
@@ -603,13 +603,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           <div style={{
             margin: '0.9rem 0.9rem 0 0.9rem',
             background: 'var(--bg-main)',
-            boxShadow: 'var(--shadow-raised-sm)',
-            border: '2px solid rgba(124, 58, 237, 0.45)',
-            borderRadius: '16px',
+            boxShadow: 'none',
+            border: '1px solid rgba(148, 163, 184, 0.25)',
+            borderRadius: '14px',
             flexShrink: 0,
             overflow: 'hidden',
           }}>
-            <div style={{ padding: '0.6rem 0.9rem 0.4rem 0.9rem', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)', borderBottom: '1px solid rgba(124,58,237,0.2)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <div style={{ padding: '0.6rem 0.9rem 0.4rem 0.9rem', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)', borderBottom: '1px solid rgba(148,163,184,0.35)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span>🎵</span> Next to Play
             </div>
             <div style={{ padding: '0.6rem 0.8rem' }}>
@@ -641,9 +641,9 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           <div style={{
             margin: '0.9rem 0.9rem 0 0.9rem',
             background: 'var(--bg-main)',
-            boxShadow: 'var(--shadow-raised-sm)',
-            border: 'var(--border-card)',
-            borderRadius: '16px',
+            boxShadow: 'none',
+            border: '1px solid rgba(148, 163, 184, 0.25)',
+            borderRadius: '14px',
             flex: 1,
             minHeight: '180px',
             display: 'flex',
@@ -709,9 +709,9 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           <div style={{
             margin: '0.65rem 0.9rem 0 0.9rem',
             background: 'var(--bg-main)',
-            boxShadow: 'var(--shadow-raised-sm)',
-            border: 'var(--border-card)',
-            borderRadius: '16px',
+            boxShadow: 'none',
+            border: '1px solid rgba(148, 163, 184, 0.25)',
+            borderRadius: '14px',
             flexShrink: 0,
             display: 'flex',
             flexDirection: 'column',
