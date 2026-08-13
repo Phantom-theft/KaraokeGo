@@ -867,7 +867,7 @@ button {
 }
 
 .landing-device-wrap--laptop {
-  right: -35%;
+  right: -33%;
   top: 22%;
   width: 82%;
   max-width: 300px;
@@ -922,7 +922,7 @@ button {
 
 .landing-phone-ring {
   position: absolute;
-  inset: -2% -4% 4%;
+  inset: -2% -4% -0.5%;
   border-radius: 36px;
   border: 1px solid rgba(176, 141, 87, 0.28);
   box-shadow:
@@ -931,6 +931,7 @@ button {
   z-index: 0;
   pointer-events: none;
 }
+
 
 .landing-phone-frame {
   position: relative;
