@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Mic2, Smartphone } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import phonePreview from '../assets/img/img1.png';
+import laptopPreview from '../assets/img/laptop_img.png';
+import tvPreview from '../assets/img/tv_img.png';
 
 interface LandingViewProps {
   onSelectHost: () => void;
@@ -87,21 +89,29 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
           </div>
 
           <div className="landing-hero-visual">
-            <div className="landing-phone-stage">
+            <div className="landing-device-cluster">
               <div className="landing-phone-glow" aria-hidden="true" />
-              <div className="landing-phone-ring" aria-hidden="true" />
 
-              <div className="landing-phone-frame">
-                <span className="landing-phone-live">
-                  <span className="landing-phone-live-dot" />
-                  Live room
-                </span>
+              <div className="landing-device-wrap landing-device-wrap--tv">
+                <div className="landing-device-frame">
+                  <img
+                    src={tvPreview}
+                    alt="Karaoke Go stage view on a TV"
+                    className="landing-device landing-device--tv"
+                  />
+                </div>
+              </div>
 
-                <img
-                  src={phonePreview}
-                  alt="Karaoke Go guest app on a phone showing the live queue and song search"
-                  className="landing-phone-img"
-                />
+              <div className="landing-phone-stage">
+                <div className="landing-phone-ring" aria-hidden="true" />
+
+                <div className="landing-phone-frame">
+                  <img
+                    src={phonePreview}
+                    alt="Karaoke Go guest app on a phone showing the live queue and song search"
+                    className="landing-phone-img"
+                  />
+                </div>
 
                 <div className="landing-phone-qr glass-qr">
                   <div className="glass-qr-code">
@@ -120,9 +130,14 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
                 </div>
               </div>
 
-              <div className="landing-phone-code" aria-hidden="true">
-                <span>Room code</span>
-                <strong>KGO1</strong>
+              <div className="landing-device-wrap landing-device-wrap--laptop">
+                <div className="landing-device-frame">
+                  <img
+                    src={laptopPreview}
+                    alt="Karaoke Go host view on a laptop"
+                    className="landing-device landing-device--laptop"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -130,7 +145,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
       </main>
 
       <footer className="landing-footer">
-        <div className="landing-footer-inner">
+        <div className="landing-footer-inner landing-footer-inner--simple">
           <div className="landing-footer-brand">
             <span className="landing-footer-mark" aria-hidden="true">
               <Mic2 size={16} strokeWidth={2.4} />
@@ -139,15 +154,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
               <p className="landing-footer-name">Karaoke Go</p>
               <p className="landing-footer-tag">Host the stage. Guests run the queue.</p>
             </div>
-          </div>
-
-          <div className="landing-footer-links">
-            <button type="button" className="landing-footer-link" onClick={() => navigate('host')}>
-              Host a room
-            </button>
-            <button type="button" className="landing-footer-link" onClick={() => navigate('join')}>
-              Join a room
-            </button>
           </div>
 
           <p className="landing-footer-copy">
