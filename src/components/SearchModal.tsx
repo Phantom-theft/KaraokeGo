@@ -164,26 +164,29 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       onClick={onClose}
     >
       <style>{`
-        @keyframes modalPulseGlow {
-          0%, 100% { box-shadow: 0 0 25px rgba(124, 58, 237, 0.35); }
-          50% { box-shadow: 0 0 45px rgba(124, 58, 237, 0.65); }
-        }
         @keyframes micPulse {
           0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.15); opacity: 0.7; }
+          50% { transform: scale(1.08); opacity: 0.75; }
         }
         .song-modal-card {
-          transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+          transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
         }
         .song-modal-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 28px rgba(124, 58, 237, 0.25);
-          border-color: rgba(124, 58, 237, 0.6) !important;
+          transform: translateY(-3px);
+          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+          border-color: rgba(176, 141, 87, 0.55) !important;
+        }
+        .suggestion-tag-btn {
+          transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
         }
         .suggestion-tag-btn:hover {
-          background: var(--primary-gradient) !important;
-          color: #ffffff !important;
-          transform: scale(1.04);
+          background: rgba(122, 46, 58, 0.85) !important;
+          color: #f8f4ef !important;
+          border-color: rgba(122, 46, 58, 0.9) !important;
+          transform: translateY(-1px);
+        }
+        .suggestion-tag-btn:active {
+          transform: scale(0.97) !important;
         }
         @media (max-width: 640px) {
           .song-grid-container {
@@ -205,10 +208,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           maxWidth: '1100px',
           height: '85vh',
           maxHeight: '850px',
-          background: 'var(--bg-main)',
-          border: '1px solid rgba(124, 58, 237, 0.45)',
+          background: 'var(--bg-card)',
+          border: '1px solid rgba(176, 141, 87, 0.35)',
           borderRadius: '28px',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 35px rgba(124, 58, 237, 0.25)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.55)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -222,28 +225,20 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <span style={{ fontSize: '1.5rem' }}>🎵</span>
-            <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em' }}>
+            <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
               Search Songs
             </h2>
           </div>
           <button
             onClick={onClose}
             aria-label="Close modal"
+            className="button-secondary"
             style={{
               width: '40px',
               height: '40px',
               borderRadius: '50%',
-              border: '1px solid rgba(194, 216, 216, 0.8)',
-              background: 'var(--bg-main)',
-              boxShadow: 'var(--shadow-raised-sm)',
-              cursor: 'pointer',
+              padding: 0,
               fontSize: '1.1rem',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#0f172a',
-              transition: 'all 0.2s ease',
             }}
           >
             ✕
@@ -268,32 +263,28 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               fontSize: '1.1rem',
               borderRadius: '20px',
               fontWeight: 600,
-              border: '2px solid rgba(124, 58, 237, 0.4)',
-              boxShadow: 'var(--shadow-inset-deep), 0 0 16px rgba(124, 58, 237, 0.15)',
+              border: '2px solid rgba(176, 141, 87, 0.4)',
+              boxShadow: '0 0 0 3px rgba(176, 141, 87, 0.08)',
             }}
           />
           {/* Microphone Voice Search Button */}
           <button
             onClick={handleVoiceSearch}
             title={isListening ? 'Listening...' : 'Search with Voice'}
+            className="button-secondary"
             style={{
               position: 'absolute',
               right: '0.85rem',
               top: '50%',
               transform: 'translateY(-50%)',
-              background: isListening ? 'rgba(239, 68, 68, 0.15)' : 'var(--bg-main)',
-              border: isListening ? '2px solid #ef4444' : '1px solid rgba(194, 216, 216, 0.8)',
-              boxShadow: isListening ? '0 0 12px rgba(239, 68, 68, 0.5)' : 'var(--shadow-raised-sm)',
+              background: isListening ? 'rgba(122, 46, 58, 0.25)' : 'transparent',
+              border: isListening ? '2px solid var(--action)' : '1px solid rgba(176, 141, 87, 0.4)',
               borderRadius: '12px',
               width: '42px',
               height: '42px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
+              padding: 0,
               fontSize: '1.15rem',
               animation: isListening ? 'micPulse 1.2s infinite' : 'none',
-              transition: 'all 0.2s ease',
             }}
           >
             🎤
@@ -315,12 +306,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                 fontSize: '0.76rem',
                 fontWeight: 700,
                 borderRadius: '9999px',
-                border: '1px solid rgba(124, 58, 237, 0.35)',
-                background: 'var(--bg-main)',
-                boxShadow: 'var(--shadow-raised-sm)',
-                color: 'var(--primary-dark)',
+                border: '1px solid rgba(176, 141, 87, 0.35)',
+                background: 'rgba(18, 18, 18, 0.65)',
+                boxShadow: 'none',
+                color: 'var(--accent)',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease',
               }}
             >
               🎵 {tag}
@@ -333,7 +323,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           {isSearching && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 0', gap: '1rem' }}>
               <div className="simple-spinner" />
-              <p style={{ color: 'var(--primary-dark)', fontWeight: 700, fontSize: '1rem', margin: 0 }}>
+              <p style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1rem', margin: 0 }}>
                 Searching YouTube Karaoke Library…
               </p>
             </div>
@@ -350,7 +340,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
           {/* Section Header for Popular Suggestions vs Search Results */}
           {!isSearching && (
-            <div style={{ marginBottom: '1rem', fontSize: '0.86rem', fontWeight: 800, color: 'var(--primary-dark)', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ marginBottom: '1rem', fontSize: '0.86rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               {searchQuery.trim() ? `Search Results (${searchResults.length})` : '🔥 Popular Karaoke Hits & Suggestions'}
             </div>
           )}
@@ -376,9 +366,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                     display: 'flex',
                     flexDirection: 'column',
                     borderRadius: '20px',
-                    border: '1px solid rgba(194, 216, 216, 0.85)',
-                    background: 'var(--bg-main)',
-                    boxShadow: 'var(--shadow-raised-sm)',
+                    border: '1px solid rgba(176, 141, 87, 0.28)',
+                    background: 'rgba(18, 18, 18, 0.75)',
+                    boxShadow: 'none',
                   }}
                 >
                   {/* Large 16:9 Thumbnail Image */}
@@ -403,7 +393,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                           bottom: '8px',
                           right: '8px',
                           background: 'rgba(0, 0, 0, 0.82)',
-                          color: '#ffffff',
+                          color: '#f8f4ef',
                           fontSize: '0.75rem',
                           fontWeight: 800,
                           padding: '0.2rem 0.55rem',
@@ -425,7 +415,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                           margin: '0 0 0.35rem 0',
                           fontSize: '1.02rem',
                           fontWeight: 800,
-                          color: '#0f172a',
+                          color: 'var(--text-primary)',
                           lineHeight: 1.3,
                           display: '-webkit-box',
                           WebkitLineClamp: 2,

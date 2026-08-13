@@ -369,14 +369,14 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   if (error) return (
     <div className="modern-card" style={{ maxWidth: '440px', margin: '4rem auto', textAlign: 'center', padding: '2.75rem 2.25rem' }}>
       <div style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>⚠️</div>
-      <h2 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', color: '#0f172a' }}>Something went wrong</h2>
+      <h2 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', color: 'var(--text-primary)' }}>Something went wrong</h2>
       <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{error}</p>
     </div>
   );
   if (!room) return (
     <div className="modern-card" style={{ maxWidth: '440px', margin: '4rem auto', textAlign: 'center', padding: '2.75rem 2.25rem' }}>
       <div style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>🔍</div>
-      <h2 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', color: '#0f172a' }}>Room missing or expired</h2>
+      <h2 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', color: 'var(--text-primary)' }}>Room missing or expired</h2>
       <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Head back and start a new stage room.</p>
     </div>
   );
@@ -387,48 +387,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const onlineCount = Object.keys(room.participants).length;
 
   return (
-    <div className="host-page" style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      overflow: 'hidden',
-      background: 'var(--bg-main)',
-      fontFamily: 'var(--font-body)',
-    }}>
-      <style>{`
-        @keyframes hostFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-        .host-list-item { animation: hostFadeIn 0.25s ease-out; }
-        .host-list-item:hover .host-add-btn { transform: scale(1.04); }
-        .host-tab-btn:focus-visible, .host-icon-btn:focus-visible, .host-add-btn:focus-visible { outline: 2px solid var(--primary-light); outline-offset: 2px; }
-      `}</style>
-
+    <div className="host-page">
       {/* ── Main Body: Video (left) + Sidebar (right) ── */}
-        <div style={{
-        display: 'flex',
-        flex: 1,
-        overflow: 'hidden',
-        gap: 0,
-      }}>
+      <div className="host-layout">
 
         {/* ════════════ ROUNDED VIDEO STAGE ════════════ */}
-        <div style={{
-          flex: '1 1 0',
-          display: 'flex',
-          flexDirection: 'column',
-          background: '#0b1020',
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: '16px',
-          border: '1px solid rgba(148, 163, 184, 0.25)',
-          boxShadow: 'none',
-          margin: '0.75rem',
-        }}>
-          <div style={{
-            flex: 1,
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
+        <div className="host-stage">
+          <div className="host-stage-inner">
             <div
               ref={setPlayerContainerNode}
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
@@ -443,18 +408,19 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               <button
                 onClick={handleStartPlayback}
                 aria-label="Start playback"
+                className="host-start-btn"
                 style={{
                   position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
                   zIndex: 12,
                   width: '64px', height: '64px', borderRadius: '50%',
-                  background: 'rgba(15, 23, 42, 0.65)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  background: 'rgba(122, 46, 58, 0.85)',
+                  border: '1px solid rgba(176, 141, 87, 0.45)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer',
-                  boxShadow: 'none',
+                  boxShadow: '0 10px 28px rgba(0,0,0,0.35)',
                 }}
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" style={{ marginLeft: '3px' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#f8f4ef" style={{ marginLeft: '3px' }}>
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </button>
@@ -465,7 +431,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 position: 'absolute', inset: 0,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(11, 16, 32, 0.92)',
+                background: 'rgba(18, 18, 18, 0.94)',
                 zIndex: 20,
                 animation: 'hostFadeIn 0.3s ease-out',
                 padding: '2rem',
@@ -474,7 +440,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 <div style={{
                   fontSize: '0.85rem',
                   fontWeight: 800,
-                  color: '#94a3b8',
+                  color: 'var(--accent)',
                   letterSpacing: '3px',
                   textTransform: 'uppercase',
                   marginBottom: '1.1rem',
@@ -484,7 +450,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 <div style={{
                   fontSize: '2.3rem',
                   fontWeight: 900,
-                  color: '#ffffff',
+                  color: 'var(--text-primary)',
                   marginBottom: '0.75rem',
                   maxWidth: '80%',
                   lineHeight: 1.2,
@@ -494,24 +460,24 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 </div>
                 <div style={{
                   fontSize: '1.05rem',
-                  color: '#94a3b8',
+                  color: 'var(--text-secondary)',
                   marginBottom: '2.25rem',
                 }}>
-                  Requested by <strong style={{ color: '#cbd5e1', fontWeight: 700 }}>{nextUpInfo.addedBy}</strong>
+                  Requested by <strong style={{ color: 'var(--accent)', fontWeight: 700 }}>{nextUpInfo.addedBy}</strong>
                 </div>
                 <div style={{
                   width: '86px',
                   height: '86px',
                   borderRadius: '50%',
-                  border: '1px solid rgba(148, 163, 184, 0.35)',
+                  border: '1px solid rgba(176, 141, 87, 0.4)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '2.75rem',
                   fontWeight: 900,
-                  color: '#ffffff',
+                  color: 'var(--text-primary)',
                   boxShadow: 'none',
-                  background: 'transparent',
+                  background: 'rgba(122, 46, 58, 0.25)',
                 }}>
                   {countdown}
                 </div>
@@ -522,7 +488,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               <div style={{
                 position: 'absolute', inset: 0, zIndex: 8,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#0f172a',
+                background: '#121212',
               }}>
                 <div className="simple-spinner" />
               </div>
@@ -533,17 +499,17 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 position: 'absolute', inset: 0, zIndex: 10,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                background: '#0f172a',
+                background: '#121212',
                 textAlign: 'center', padding: '2rem',
               }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚫</div>
-                <div style={{ fontWeight: 800, fontSize: '1.4rem', color: '#ffffff', marginBottom: '0.5rem' }}>
+                <div style={{ fontWeight: 800, fontSize: '1.4rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
                   Video Unavailable
                 </div>
-                <div style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '1.5rem', maxWidth: '380px' }}>
-                  <strong style={{ color: '#ffffff' }}>"{currentSong.title}"</strong> cannot be played on external sites — the owner disabled embedding.
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '1.5rem', maxWidth: '380px' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>"{currentSong.title}"</strong> cannot be played on external sites — the owner disabled embedding.
                 </div>
-                <div style={{ color: '#cbd5e1', fontSize: '0.9rem', fontWeight: 700, marginBottom: '1.25rem' }}>
+                <div style={{ color: 'var(--accent)', fontSize: '0.9rem', fontWeight: 700, marginBottom: '1.25rem' }}>
                   Auto-skipping to next song in 3 seconds…
                 </div>
                 <button
@@ -562,22 +528,24 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 color: 'var(--text-secondary)',
-                background: 'radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%)',
+                background: 'radial-gradient(ellipse at center, #1a1a1a 0%, #121212 100%)',
                 animation: 'hostFadeIn 0.3s ease-out',
               }}>
                 <div style={{
                   width: '64px', height: '64px', borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'rgba(148, 163, 184, 0.14)', marginBottom: '1.25rem',
+                  background: 'rgba(176, 141, 87, 0.12)',
+                  border: '1px solid rgba(176, 141, 87, 0.3)',
+                  marginBottom: '1.25rem',
                 }}>
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B08D57" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
                   </svg>
                 </div>
-                <h2 style={{ margin: 0, fontWeight: 800, color: '#ffffff', fontSize: '1.7rem', letterSpacing: '-0.02em' }}>
+                <h2 style={{ margin: 0, fontWeight: 800, color: 'var(--text-primary)', fontSize: '1.7rem', letterSpacing: '-0.02em' }}>
                   Stage is Empty
                 </h2>
-                <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginTop: '0.5rem' }}>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', marginTop: '0.5rem' }}>
                   Search and add karaoke songs from the sidebar!
                 </p>
               </div>
@@ -588,28 +556,11 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
         </div>
 
         {/* ════════════ SIDEBAR ════════════ */}
-        <div style={{
-          width: '350px',
-          flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          background: 'var(--bg-main)',
-            borderLeft: '1px solid rgba(148, 163, 184, 0.25)',
-          overflow: 'hidden',
-          gap: '0',
-        }}>
+        <div className="host-sidebar">
 
           {/* ── 0. NEXT TO PLAY Panel ── */}
-          <div style={{
-            margin: '0.9rem 0.9rem 0 0.9rem',
-            background: 'var(--bg-main)',
-            boxShadow: 'none',
-            border: '1px solid rgba(148, 163, 184, 0.25)',
-            borderRadius: '14px',
-            flexShrink: 0,
-            overflow: 'hidden',
-          }}>
-            <div style={{ padding: '0.6rem 0.9rem 0.4rem 0.9rem', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)', borderBottom: '1px solid rgba(148,163,184,0.35)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <div className="host-panel">
+            <div className="host-panel-title">
               <span>🎵</span> Next to Play
             </div>
             <div style={{ padding: '0.6rem 0.8rem' }}>
@@ -618,10 +569,10 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   <img
                     src={nextToPlaySong.thumbnail}
                     alt={nextToPlaySong.title}
-                    style={{ width: '48px', height: '34px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0, border: '1px solid rgba(124,58,237,0.25)' }}
+                    style={{ width: '48px', height: '34px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0, border: '1px solid rgba(176,141,87,0.3)' }}
                   />
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {nextToPlaySong.title}
                     </div>
                     <div style={{ fontSize: '0.73rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
@@ -638,19 +589,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           </div>
 
           {/* ── 1. QUEUE Panel ── */}
-          <div style={{
-            margin: '0.9rem 0.9rem 0 0.9rem',
-            background: 'var(--bg-main)',
-            boxShadow: 'none',
-            border: '1px solid rgba(148, 163, 184, 0.25)',
-            borderRadius: '14px',
-            flex: 1,
-            minHeight: '180px',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}>
-            <div style={{ padding: '0.65rem 0.9rem 0.4rem 0.9rem', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)', borderBottom: '1px solid rgba(194,216,216,0.4)', flexShrink: 0 }}>
+          <div className="host-panel host-panel--queue">
+            <div className="host-panel-title">
               Queue ({sortedQueue.length})
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem 0.7rem' }}>
@@ -666,16 +606,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                     return (
                       <div
                         key={item.queueId}
-                        className="host-list-item"
+                        className={`host-list-item${isCurrent ? ' is-current' : ''}`}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           padding: '0.5rem 0.6rem',
-                          background: 'var(--bg-main)',
-                          boxShadow: isCurrent ? 'var(--shadow-inset)' : 'var(--shadow-raised-sm)',
                           borderRadius: '11px',
-                          border: isCurrent ? '2px solid var(--primary-light)' : 'var(--border-card)',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', minWidth: 0 }}>
@@ -683,13 +620,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                             width: '20px', height: '20px', borderRadius: '6px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontWeight: 800, fontSize: '0.72rem', flexShrink: 0,
-                            color: isCurrent ? '#ffffff' : 'var(--text-muted)',
-                            background: isCurrent ? 'var(--primary-gradient)' : 'transparent',
+                            color: isCurrent ? '#f8f4ef' : 'var(--text-muted)',
+                            background: isCurrent ? 'var(--action)' : 'transparent',
                           }}>
                             {isCurrent ? '►' : index + 1}
                           </span>
                           <div style={{ minWidth: 0 }}>
-                            <div style={{ fontWeight: 700, fontSize: '0.82rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {item.title}
                             </div>
                             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '1px' }}>
@@ -706,23 +643,14 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           </div>
 
           {/* ── 2. SEARCH Panel ── */}
-          <div style={{
-            margin: '0.65rem 0.9rem 0 0.9rem',
-            background: 'var(--bg-main)',
-            boxShadow: 'none',
-            border: '1px solid rgba(148, 163, 184, 0.25)',
-            borderRadius: '14px',
-            flexShrink: 0,
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            <div style={{ padding: '0.65rem 0.9rem 0.4rem 0.9rem', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)', borderBottom: '1px solid rgba(194,216,216,0.4)', flexShrink: 0 }}>
+          <div className="host-panel">
+            <div className="host-panel-title">
               Search
             </div>
             <div style={{ padding: '0.6rem 0.7rem 0.4rem 0.7rem', flexShrink: 0 }}>
               <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setIsSearchModalOpen(true)}>
                 <svg
-                  width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                  width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
                   style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
                 >
                   <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" />
@@ -742,7 +670,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             </div>
             {/* Suggested Songs 2×2 grid */}
             <div style={{ padding: '0.5rem 0.7rem 0.7rem 0.7rem' }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.55px', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.55px', color: 'var(--accent)', marginBottom: '0.5rem' }}>
                 💡 Suggest Song
               </div>
               <div style={{
@@ -755,12 +683,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   return (
                     <div
                       key={song.id}
+                      className="host-suggest-card"
                       style={{
-                        border: '1px solid rgba(124,58,237,0.3)',
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        background: 'var(--bg-main)',
-                        boxShadow: 'var(--shadow-raised-sm)',
                         display: 'flex',
                         flexDirection: 'column',
                       }}
@@ -775,7 +699,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                       </div>
                       {/* Card Body */}
                       <div style={{ padding: '0.4rem 0.5rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
-                        <div style={{ fontWeight: 800, fontSize: '0.76rem', color: '#0f172a', lineHeight: 1.25, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                        <div style={{ fontWeight: 800, fontSize: '0.76rem', color: 'var(--text-primary)', lineHeight: 1.25, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                           {song.title}
                         </div>
                         <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
@@ -797,8 +721,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                             width: '100%',
                             justifyContent: 'center',
                             opacity: isAdded ? 0.7 : 1,
-                            background: isAdded ? 'var(--primary-light)' : undefined,
-                            transition: 'all 0.2s ease',
+                            background: isAdded ? 'rgba(176, 141, 87, 0.35)' : undefined,
                           }}
                         >
                           {isAdded ? '✓ Added!' : '+ Add'}
@@ -812,35 +735,18 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           </div>
 
           {/* ── 3. PLAYBACK CONTROLS Panel + INLINE VISIBLE QR CODE & EXIT ── */}
-          <div style={{
-            margin: '0.65rem 0.9rem 0.9rem 0.9rem',
-            background: 'var(--bg-main)',
-            boxShadow: 'var(--shadow-raised-sm)',
-            border: 'var(--border-card)',
-            borderRadius: '16px',
-            padding: '0.85rem 1rem',
-            flexShrink: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.6rem',
-          }}>
-            <div style={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--primary-dark)' }}>
+          <div className="host-panel host-panel--controls">
+            <div style={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--accent)' }}>
               Playback & Controls
             </div>
 
             {/* Progress bar */}
-            <div style={{ height: '3px', width: '100%', background: 'rgba(194,216,216,0.5)', borderRadius: '9999px' }}>
-              <div style={{
-                height: '100%',
-                width: `${progressPct}%`,
-                background: 'var(--primary-gradient)',
-                borderRadius: '9999px',
-                transition: 'width 1s linear',
-              }} />
+            <div className="host-progress-track">
+              <div className="host-progress-fill" style={{ width: `${progressPct}%` }} />
             </div>
 
             {/* Play/Pause & Skip Controls */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div className="host-controls-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <button
                 onClick={handlePlayPause}
                 className="button-primary host-icon-btn"
@@ -857,30 +763,16 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               >
                 ⏭ Skip
               </button>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  fontSize: '0.82rem',
-                  color: 'var(--text-secondary)',
-                  fontWeight: 700,
-                  padding: '0.3rem 0.7rem',
-                  borderRadius: '9999px',
-                  background: 'var(--bg-main)',
-                  boxShadow: 'var(--shadow-inset)',
-                  flexShrink: 0,
-                }}
-              >
-                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: onlineCount > 0 ? '#10b981' : '#94a3b8', display: 'inline-block' }} />
+              <span className="host-online-pill">
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: onlineCount > 0 ? '#B08D57' : 'rgba(243,239,232,0.35)', display: 'inline-block' }} />
                 {onlineCount} online
               </span>
             </div>
 
             {currentSong && (
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', fontWeight: 500, display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', fontWeight: 500, display: 'flex', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span style={{ fontVariantNumeric: 'tabular-nums' }}>{formatTime(localCurrentTime)} / {formatTime(duration)}</span>
-                <span style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>added by {currentSong.addedBy}</span>
+                <span style={{ color: 'var(--accent)', fontWeight: 600 }}>added by {currentSong.addedBy}</span>
               </div>
             )}
 
@@ -890,30 +782,18 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               gap: '0.75rem',
               alignItems: 'center',
               paddingTop: '0.65rem',
-              borderTop: '1px solid rgba(194, 216, 216, 0.6)',
+              borderTop: '1px solid rgba(176, 141, 87, 0.22)',
               marginTop: '0.1rem',
             }}>
-              {/* Always-Visible Inline QR Code */}
-              <div style={{
-                background: '#ffffff',
-                padding: '0.4rem',
-                borderRadius: '14px',
-                boxShadow: 'var(--shadow-raised-sm)',
-                border: '1px solid rgba(194, 216, 216, 0.6)',
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
+              <div className="host-qr-wrap">
                 <QRCodeSVG value={joinUrl} size={76} />
               </div>
 
-              {/* Room Code & Exit Button */}
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                 <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Scan to Join Stage
                 </div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '2px', color: 'var(--primary-dark)', margin: '-2px 0' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '2px', color: 'var(--accent)', margin: '-2px 0' }}>
                   {roomCode}
                 </div>
                 {onLeave && (
@@ -935,17 +815,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
       {/* QR Code Modal */}
       {showQrModal && (
         <div
-          style={{
-            position: 'fixed', inset: 0,
-            background: 'rgba(236, 248, 248, 0.85)',
-            backdropFilter: 'blur(12px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1rem',
-            animation: 'hostFadeIn 0.2s ease-out',
-          }}
+          className="host-modal-backdrop"
+          style={{ animation: 'hostFadeIn 0.2s ease-out' }}
           onClick={() => setShowQrModal(false)}
         >
           <div
@@ -953,16 +824,16 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             style={{ maxWidth: '360px', width: '100%', textAlign: 'center', padding: '2.25rem 2rem' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 style={{ marginTop: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.01em' }}>
+            <h2 style={{ marginTop: 0, fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
               Join Stage Room
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 500, margin: '0.3rem 0 0 0' }}>
               Scan with your phone camera to join as a participant.
             </p>
-            <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '20px', display: 'inline-block', margin: '1.4rem 0 1.1rem 0', boxShadow: 'var(--shadow-raised-sm)' }}>
+            <div className="host-qr-wrap" style={{ display: 'inline-flex', margin: '1.4rem 0 1.1rem 0', padding: '1.25rem' }}>
               <QRCodeSVG value={joinUrl} size={180} />
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 900, letterSpacing: '6px', color: 'var(--primary-dark)', marginBottom: '0.4rem' }}>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, letterSpacing: '6px', color: 'var(--accent)', marginBottom: '0.4rem' }}>
               {roomCode}
             </div>
             <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', wordBreak: 'break-all', fontWeight: 500, margin: 0 }}>

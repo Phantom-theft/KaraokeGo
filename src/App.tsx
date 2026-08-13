@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { LandingView } from './components/LandingView';
+import { HostSetupView } from './components/HostSetupView';
+import { JoinSetupView } from './components/JoinSetupView';
 import { HostView } from './components/HostView';
 import { ParticipantView } from './components/ParticipantView';
 import './App.css';
 
-type AppView = 'landing' | 'host' | 'participant';
+type AppView = 'landing' | 'host-setup' | 'join-setup' | 'host' | 'participant';
 
 interface SessionState {
   view: AppView;
@@ -20,8 +22,13 @@ function loadSession(): SessionState | null {
     const raw = sessionStorage.getItem(SESSION_KEY);
     if (!raw) return null;
     const s: SessionState = JSON.parse(raw);
-    // Only restore if we have all the required fields
-    if (s.view && s.roomCode && s.userId && s.userName && s.view !== 'landing') {
+    if (
+      s.view &&
+      s.roomCode &&
+      s.userId &&
+      s.userName &&
+      (s.view === 'host' || s.view === 'participant')
+    ) {
       return s;
     }
     return null;
@@ -43,28 +50,28 @@ function clearSession() {
 }
 
 function App() {
-  // Restore from sessionStorage on first load
   const saved = loadSession();
+  const initialRoomParam =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('room') ||
+        new URLSearchParams(window.location.search).get('code')
+      : null;
 
-  const [view, setView] = useState<AppView>(saved?.view ?? 'landing');
+  const [view, setView] = useState<AppView>(() => {
+    if (saved?.view) return saved.view;
+    if (initialRoomParam) return 'join-setup';
+    return 'landing';
+  });
   const [roomCode, setRoomCode] = useState<string | null>(saved?.roomCode ?? null);
   const [userId, setUserId] = useState<string | null>(saved?.userId ?? null);
   const [userName, setUserName] = useState<string | null>(saved?.userName ?? null);
+  const [joinInitialCode, setJoinInitialCode] = useState(initialRoomParam?.trim().toUpperCase() ?? '');
 
-  // Also check URL params for ?room=CODE (joining via QR)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const roomParam = params.get('room');
-    // Only redirect if we're currently on landing and a room code is in URL
-    if (roomParam && view === 'landing') {
-      // Pre-fill room code — LandingView will handle the actual join flow
-    }
-  }, []);
-
-  // Persist session whenever state changes
-  useEffect(() => {
-    if (view !== 'landing' && roomCode && userId && userName) {
-      saveSession({ view, roomCode, userId, userName });
+    if (view === 'host' || view === 'participant') {
+      if (roomCode && userId && userName) {
+        saveSession({ view, roomCode, userId, userName });
+      }
     }
   }, [view, roomCode, userId, userName]);
 
@@ -87,33 +94,61 @@ function App() {
     setRoomCode(null);
     setUserId(null);
     setUserName(null);
+    setJoinInitialCode('');
     setView('landing');
     window.history.replaceState({}, document.title, window.location.pathname);
+  };
+
+  const goBackToLanding = () => {
+    setView('landing');
   };
 
   return (
     <div className="app">
       {view === 'landing' && (
-        <LandingView
-          onHost={handleHost}
-          onJoin={handleJoin}
-        />
+        <div key="landing" className="view-transition view-enter">
+          <LandingView
+            onSelectHost={() => setView('host-setup')}
+            onSelectJoin={() => {
+              setJoinInitialCode('');
+              setView('join-setup');
+            }}
+          />
+        </div>
+      )}
+      {view === 'host-setup' && (
+        <div key="host-setup" className="view-transition view-enter">
+          <HostSetupView onHost={handleHost} onBack={goBackToLanding} />
+        </div>
+      )}
+      {view === 'join-setup' && (
+        <div key="join-setup" className="view-transition view-enter">
+          <JoinSetupView
+            onJoin={handleJoin}
+            onBack={goBackToLanding}
+            initialCode={joinInitialCode}
+          />
+        </div>
       )}
       {view === 'host' && roomCode && userId && userName && (
-        <HostView
-          roomCode={roomCode}
-          userId={userId}
-          userName={userName}
-          onLeave={handleLeave}
-        />
+        <div key="host" className="view-transition view-enter">
+          <HostView
+            roomCode={roomCode}
+            userId={userId}
+            userName={userName}
+            onLeave={handleLeave}
+          />
+        </div>
       )}
       {view === 'participant' && roomCode && userId && userName && (
-        <ParticipantView
-          roomCode={roomCode}
-          userId={userId}
-          userName={userName}
-          onLeave={handleLeave}
-        />
+        <div key="participant" className="view-transition view-enter">
+          <ParticipantView
+            roomCode={roomCode}
+            userId={userId}
+            userName={userName}
+            onLeave={handleLeave}
+          />
+        </div>
       )}
     </div>
   );

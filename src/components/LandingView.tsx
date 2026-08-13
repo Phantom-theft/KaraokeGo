@@ -1,205 +1,115 @@
-import React, { useState, useEffect } from 'react';
-import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
+import React, { useState } from 'react';
+import { Mic2, Smartphone } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
+import phonePreview from '../assets/img/img1.png';
 
 interface LandingViewProps {
-  onHost: (roomCode: string, userId: string, userName: string) => void;
-  onJoin: (roomCode: string, userId: string, userName: string) => void;
+  onSelectHost: () => void;
+  onSelectJoin: () => void;
 }
 
-export const LandingView: React.FC<LandingViewProps> = ({ onHost, onJoin }) => {
-  const [hostName, setHostName] = useState('');
-  const [joinCode, setJoinCode] = useState('');
-  const [joinName, setJoinName] = useState('');
-  const [activeTab, setActiveTab] = useState<'host' | 'join'>('host');
-  const [darkMode, setDarkMode] = useState(false);
+export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelectJoin }) => {
+  const [exitingTo, setExitingTo] = useState<'host' | 'join' | null>(null);
+  const previewJoinUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}${window.location.pathname}`
+      : 'https://karaokego.app';
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const roomParam = params.get('room') || params.get('code');
-    if (roomParam) {
-      setJoinCode(roomParam.trim().toUpperCase());
-      setActiveTab('join');
-    }
-  }, []);
-
-  const { createRoom, joinRoom } = useRealtimeRoom(null, null);
-  const [loadingAction, setLoadingAction] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
-
-  const handleHostSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoadingAction(true);
-    setActionError(null);
-    try {
-      const name = hostName.trim() || 'Host';
-      const userId = 'host_' + Math.random().toString(36).substring(2, 9);
-      const code = await createRoom(name, userId);
-      onHost(code, userId, name);
-    } catch (err: any) {
-      console.error(err);
-      setActionError(err.message || 'Failed to create room. Please check Firebase setup.');
-    } finally {
-      setLoadingAction(false);
-    }
-  };
-
-  const handleJoinSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoadingAction(true);
-    setActionError(null);
-    try {
-      const code = joinCode.trim().toUpperCase();
-      if (!code) return;
-      const name = joinName.trim() || 'Guest';
-      const userId = 'user_' + Math.random().toString(36).substring(2, 9);
-      await joinRoom(code, name, userId);
-      onJoin(code, userId, name);
-    } catch (err: any) {
-      console.error(err);
-      setActionError(err.message || 'Failed to join room. Please check the room code.');
-    } finally {
-      setLoadingAction(false);
-    }
+  const navigate = (target: 'host' | 'join') => {
+    if (exitingTo) return;
+    setExitingTo(target);
+    window.setTimeout(() => {
+      if (target === 'host') onSelectHost();
+      else onSelectJoin();
+    }, 380);
   };
 
   return (
-    <div className={`landing-page ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`landing-page ${exitingTo ? 'is-exiting' : ''}`}>
       <header className="landing-site-header">
         <div className="landing-site-header-inner">
           <p className="landing-brand">Karaoke Go</p>
-          <button
-            type="button"
-            className="landing-theme-toggle"
-            onClick={() => setDarkMode((d) => !d)}
-            title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            aria-label={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {darkMode ? 'Light' : 'Dark'}
-          </button>
         </div>
       </header>
 
       <main className="landing-shell">
         <section className="landing-hero">
-          <div className="landing-hero-copy">
-            <p className="landing-min-kicker">Simple karaoke for any screen</p>
-            <h1>Start a karaoke room in seconds.</h1>
+          <div className="landing-hero-left">
+            <p className="landing-min-kicker">Live karaoke nights</p>
+            <h1 className="landing-hero-brand">Karaoke Go</h1>
             <p className="landing-min-subtitle">
               Host from your TV or laptop, then let guests join instantly with a
               4-letter code.
             </p>
-            <ul className="landing-hero-points">
-              <li>Real-time synced queue</li>
-              <li>Easy guest control from phones</li>
-              <li>No app install required</li>
-            </ul>
+
+            <div className="landing-min-card">
+              <header className="landing-min-header">
+                <p className="landing-min-kicker">Get started</p>
+                <h2>Choose your role</h2>
+              </header>
+
+              <p className="landing-choice-hint">
+                Pick how you want to jump into the party.
+              </p>
+
+              <div className="landing-choice-grid">
+                <button
+                  type="button"
+                  className={`landing-choice-btn ${exitingTo === 'host' ? 'is-pressed' : ''}`}
+                  onClick={() => navigate('host')}
+                  disabled={!!exitingTo}
+                >
+                  <span className="landing-choice-icon" aria-hidden="true">
+                    <Mic2 size={22} strokeWidth={2.2} />
+                  </span>
+                  <span className="landing-choice-copy">
+                    <span className="landing-choice-title">Host</span>
+                    <span className="landing-choice-desc">Create a room and run the stage</span>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`landing-choice-btn ${exitingTo === 'join' ? 'is-pressed' : ''}`}
+                  onClick={() => navigate('join')}
+                  disabled={!!exitingTo}
+                >
+                  <span className="landing-choice-icon" aria-hidden="true">
+                    <Smartphone size={22} strokeWidth={2.2} />
+                  </span>
+                  <span className="landing-choice-copy">
+                    <span className="landing-choice-title">Join</span>
+                    <span className="landing-choice-desc">Enter a code and add songs</span>
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <section className="landing-min-card">
-            <header className="landing-min-header">
-              <div>
-                <p className="landing-min-kicker">Get started</p>
-                <h2>{activeTab === 'host' ? 'Host a Room' : 'Join a Room'}</h2>
+          <div className="landing-hero-visual" aria-hidden="false">
+            <div className="landing-phone-stage">
+              <img
+                src={phonePreview}
+                alt="Karaoke Go guest app on a phone showing the live queue and song search"
+                className="landing-phone-img"
+              />
+
+              <div className="landing-phone-qr glass-qr">
+                <div className="glass-qr-code">
+                  <QRCodeSVG
+                    value={previewJoinUrl}
+                    size={72}
+                    bgColor="transparent"
+                    fgColor="#121212"
+                    level="M"
+                  />
+                </div>
+                <div className="glass-qr-copy">
+                  <span className="glass-qr-label">Scan to join</span>
+                  <span className="glass-qr-hint">Phone guests, no app install</span>
+                </div>
               </div>
-            </header>
-
-            {actionError && <div className="landing-error">{actionError}</div>}
-
-            <div className="landing-tabs" role="tablist" aria-label="Room action">
-              <button
-                type="button"
-                className={`landing-tab ${activeTab === 'host' ? 'is-active' : ''}`}
-                onClick={() => setActiveTab('host')}
-                role="tab"
-                aria-selected={activeTab === 'host'}
-              >
-                Host
-              </button>
-              <button
-                type="button"
-                className={`landing-tab ${activeTab === 'join' ? 'is-active' : ''}`}
-                onClick={() => setActiveTab('join')}
-                role="tab"
-                aria-selected={activeTab === 'join'}
-              >
-                Join
-              </button>
             </div>
-
-            {activeTab === 'host' ? (
-              <form onSubmit={handleHostSubmit} className="landing-form">
-                <div>
-                  <label htmlFor="hostNameInput">Host display name</label>
-                  <input
-                    id="hostNameInput"
-                    type="text"
-                    value={hostName}
-                    onChange={(e) => setHostName(e.target.value)}
-                    placeholder="e.g. Alex"
-                    className="landing-input"
-                    required
-                  />
-                </div>
-                <button type="submit" className="landing-submit" disabled={loadingAction}>
-                  {loadingAction ? 'Creating room...' : 'Create room'}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleJoinSubmit} className="landing-form">
-                <div>
-                  <label htmlFor="joinCodeInput">Room code</label>
-                  <input
-                    id="joinCodeInput"
-                    type="text"
-                    value={joinCode}
-                    onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                    placeholder="ABCD"
-                    maxLength={4}
-                    className="landing-input landing-room-code"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="joinNameInput">Your name</label>
-                  <input
-                    id="joinNameInput"
-                    type="text"
-                    value={joinName}
-                    onChange={(e) => setJoinName(e.target.value)}
-                    placeholder="e.g. Jordan"
-                    className="landing-input"
-                    required
-                  />
-                </div>
-                <button type="submit" className="landing-submit" disabled={loadingAction}>
-                  {loadingAction ? 'Joining room...' : 'Join room'}
-                </button>
-              </form>
-            )}
-          </section>
-        </section>
-
-        <section className="landing-info-grid">
-          <article className="landing-info-card">
-            <h3>Create and share</h3>
-            <p>Launch a room and share the 4-letter code with your friends.</p>
-          </article>
-          <article className="landing-info-card">
-            <h3>Build the queue</h3>
-            <p>Guests can add songs from their phones while the host controls playback.</p>
-          </article>
-          <article className="landing-info-card">
-            <h3>Sing together</h3>
-            <p>Keep the party moving with a smooth and simple shared experience.</p>
-          </article>
-        </section>
-
-        <section className="landing-steps">
-          <h2>How it works</h2>
-          <div className="landing-steps-grid">
-            <div><span>1</span>Create room</div>
-            <div><span>2</span>Share code</div>
-            <div><span>3</span>Start singing</div>
           </div>
         </section>
       </main>
