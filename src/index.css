@@ -975,7 +975,7 @@ button {
   position: absolute;
   z-index: 5;
   left: auto;
-  right: -22%;
+  right: -32%;
   bottom: -4%;
   display: flex;
   align-items: center;
@@ -1274,7 +1274,7 @@ button {
   }
 
   .landing-phone-qr.glass-qr {
-    right: -28%;
+    right: -36%;
   }
 }
 
@@ -1315,7 +1315,7 @@ button {
   }
 
   .landing-phone-qr.glass-qr {
-    right: -14%;
+    right: -20%;
     bottom: 0;
   }
 
@@ -1375,7 +1375,7 @@ button {
   }
 
   .landing-phone-qr.glass-qr {
-    right: -8%;
+    right: -12%;
     bottom: 0;
     padding: 0.5rem 0.55rem;
     gap: 0.5rem;
