@@ -86,33 +86,75 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
             </div>
           </div>
 
-          <div className="landing-hero-visual" aria-hidden="false">
+          <div className="landing-hero-visual">
             <div className="landing-phone-stage">
-              <img
-                src={phonePreview}
-                alt="Karaoke Go guest app on a phone showing the live queue and song search"
-                className="landing-phone-img"
-              />
+              <div className="landing-phone-glow" aria-hidden="true" />
+              <div className="landing-phone-ring" aria-hidden="true" />
 
-              <div className="landing-phone-qr glass-qr">
-                <div className="glass-qr-code">
-                  <QRCodeSVG
-                    value={previewJoinUrl}
-                    size={72}
-                    bgColor="transparent"
-                    fgColor="#121212"
-                    level="M"
-                  />
+              <div className="landing-phone-frame">
+                <span className="landing-phone-live">
+                  <span className="landing-phone-live-dot" />
+                  Live room
+                </span>
+
+                <img
+                  src={phonePreview}
+                  alt="Karaoke Go guest app on a phone showing the live queue and song search"
+                  className="landing-phone-img"
+                />
+
+                <div className="landing-phone-qr glass-qr">
+                  <div className="glass-qr-code">
+                    <QRCodeSVG
+                      value={previewJoinUrl}
+                      size={72}
+                      bgColor="transparent"
+                      fgColor="#121212"
+                      level="M"
+                    />
+                  </div>
+                  <div className="glass-qr-copy">
+                    <span className="glass-qr-label">Scan to join</span>
+                    <span className="glass-qr-hint">Phone guests, no app install</span>
+                  </div>
                 </div>
-                <div className="glass-qr-copy">
-                  <span className="glass-qr-label">Scan to join</span>
-                  <span className="glass-qr-hint">Phone guests, no app install</span>
-                </div>
+              </div>
+
+              <div className="landing-phone-code" aria-hidden="true">
+                <span>Room code</span>
+                <strong>KGO1</strong>
               </div>
             </div>
           </div>
         </section>
       </main>
+
+      <footer className="landing-footer">
+        <div className="landing-footer-inner">
+          <div className="landing-footer-brand">
+            <span className="landing-footer-mark" aria-hidden="true">
+              <Mic2 size={16} strokeWidth={2.4} />
+            </span>
+            <div>
+              <p className="landing-footer-name">Karaoke Go</p>
+              <p className="landing-footer-tag">Host the stage. Guests run the queue.</p>
+            </div>
+          </div>
+
+          <div className="landing-footer-links">
+            <button type="button" className="landing-footer-link" onClick={() => navigate('host')}>
+              Host a room
+            </button>
+            <button type="button" className="landing-footer-link" onClick={() => navigate('join')}>
+              Join a room
+            </button>
+          </div>
+
+          <p className="landing-footer-copy">
+            © {new Date().getFullYear()} Karaoke Go
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
