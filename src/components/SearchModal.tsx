@@ -76,7 +76,6 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SongSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const [addedSongId, setAddedSongId] = useState<string | null>(null);
 
   // Debounced search effect
@@ -101,33 +100,6 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Voice Search (Web Speech API)
-  const handleVoiceSearch = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert('Voice search is not supported in your browser. Please type to search.');
-      return;
-    }
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      recognition.onerror = () => setIsListening(false);
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          setSearchQuery(transcript);
-        }
-      };
-      recognition.start();
-    } catch (e) {
-      console.error('Speech recognition error', e);
-      setIsListening(false);
-    }
-  };
-
   const handleAdd = (song: SongSearchResult) => {
     onAddSong(song);
     setAddedSongId(song.id);
@@ -148,108 +120,34 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 2000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(15, 17, 23, 0.75)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        padding: '1.25rem',
-        animation: 'hostFadeIn 0.25s ease-out',
-      }}
+      className="search-modal-backdrop"
       onClick={onClose}
     >
-      <style>{`
-        @keyframes micPulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.08); opacity: 0.75; }
-        }
-        .song-modal-card {
-          transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
-        }
-        .song-modal-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-          border-color: rgba(176, 141, 87, 0.55) !important;
-        }
-        .suggestion-tag-btn {
-          transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
-        }
-        .suggestion-tag-btn:hover {
-          background: rgba(122, 46, 58, 0.85) !important;
-          color: #f8f4ef !important;
-          border-color: rgba(122, 46, 58, 0.9) !important;
-          transform: translateY(-1px);
-        }
-        .suggestion-tag-btn:active {
-          transform: scale(0.97) !important;
-        }
-        @media (max-width: 640px) {
-          .song-grid-container {
-            grid-template-columns: 1fr !important;
-          }
-          .search-modal-box {
-            width: 95vw !important;
-            height: 92vh !important;
-            padding: 1.25rem 1rem !important;
-          }
-        }
-      `}</style>
-
-      {/* Main Large Modal Box */}
       <div
         className="search-modal-box"
-        style={{
-          width: '90vw',
-          maxWidth: '1100px',
-          height: '85vh',
-          maxHeight: '850px',
-          background: 'var(--bg-card)',
-          border: '1px solid rgba(176, 141, 87, 0.35)',
-          borderRadius: '28px',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.55)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          padding: '1.75rem 2rem',
-          position: 'relative',
-        }}
         onClick={(e) => e.stopPropagation()}
       >
 
         {/* Modal Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <span style={{ fontSize: '1.5rem' }}>🎵</span>
-            <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-              Search Songs
-            </h2>
-          </div>
+          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+            Search Songs
+          </h2>
           <button
             onClick={onClose}
             aria-label="Close modal"
             className="button-secondary"
             style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              padding: 0,
-              fontSize: '1.1rem',
+              padding: '0.5rem 0.9rem',
+              fontSize: '0.85rem',
             }}
           >
-            ✕
+            Close
           </button>
         </div>
 
-        {/* Large Search Bar Input with Voice Search Button */}
-        <div style={{ position: 'relative', marginBottom: '0.85rem', flexShrink: 0 }}>
-          <span style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.2rem', pointerEvents: 'none', opacity: 0.7 }}>
-            🔎
-          </span>
+        {/* Search Bar */}
+        <div style={{ marginBottom: '0.85rem', flexShrink: 0 }}>
           <input
             type="text"
             placeholder="Search songs or artists..."
@@ -259,7 +157,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             className="modern-input"
             style={{
               width: '100%',
-              padding: '1.1rem 3.5rem 1.1rem 3.2rem',
+              padding: '1.1rem 1.25rem',
               fontSize: '1.1rem',
               borderRadius: '20px',
               fontWeight: 600,
@@ -267,34 +165,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               boxShadow: '0 0 0 3px rgba(176, 141, 87, 0.08)',
             }}
           />
-          {/* Microphone Voice Search Button */}
-          <button
-            onClick={handleVoiceSearch}
-            title={isListening ? 'Listening...' : 'Search with Voice'}
-            className="button-secondary"
-            style={{
-              position: 'absolute',
-              right: '0.85rem',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: isListening ? 'rgba(122, 46, 58, 0.25)' : 'transparent',
-              border: isListening ? '2px solid var(--action)' : '1px solid rgba(176, 141, 87, 0.4)',
-              borderRadius: '12px',
-              width: '42px',
-              height: '42px',
-              padding: 0,
-              fontSize: '1.15rem',
-              animation: isListening ? 'micPulse 1.2s infinite' : 'none',
-            }}
-          >
-            🎤
-          </button>
         </div>
 
         {/* Suggested Quick Search Tags */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginBottom: '1.25rem', flexShrink: 0 }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.3rem', marginRight: '0.2rem' }}>
-            💡 Quick Suggestions:
+          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', marginRight: '0.2rem' }}>
+            Quick Suggestions:
           </span>
           {SUGGESTION_TAGS.map((tag) => (
             <button
@@ -313,7 +189,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                 cursor: 'pointer',
               }}
             >
-              🎵 {tag}
+              {tag}
             </button>
           ))}
         </div>
@@ -331,7 +207,6 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
           {!isSearching && searchQuery && searchResults.length === 0 && (
             <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-secondary)' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🔍</div>
               <p style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0 }}>
                 No karaoke tracks found for "{searchQuery}".
               </p>
@@ -340,22 +215,14 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
           {/* Section Header for Popular Suggestions vs Search Results */}
           {!isSearching && (
-            <div style={{ marginBottom: '1rem', fontSize: '0.86rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              {searchQuery.trim() ? `Search Results (${searchResults.length})` : '🔥 Popular Karaoke Hits & Suggestions'}
+            <div style={{ marginBottom: '1rem', fontSize: '0.86rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+              {searchQuery.trim() ? `Search Results (${searchResults.length})` : 'Popular Karaoke Hits'}
             </div>
           )}
 
           {/* 2-Column Grid on Desktop, 1-Column on Mobile */}
           {!isSearching && displayList.length > 0 && (
-            <div
-              className="song-grid-container"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '1.35rem',
-                paddingBottom: '1.5rem',
-              }}
-            >
+            <div className="song-grid-container">
               {displayList.map((song) => (
                 <div
                   key={song.id}
@@ -442,7 +309,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                         gap: '0.4rem',
                       }}
                     >
-                      {addedSongId === song.id ? '✓ Added!' : buttonLabel}
+                      {addedSongId === song.id ? 'Added!' : buttonLabel}
                     </button>
                   </div>
                 </div>

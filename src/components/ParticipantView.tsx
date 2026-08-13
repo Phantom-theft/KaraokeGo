@@ -51,26 +51,26 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
   const sortedQueue = room ? Object.values(room.queue).sort((a, b) => a.timestamp - b.timestamp) : [];
 
   if (loading) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1rem', background: 'var(--bg-main)' }}>
+    <div className="page-loading">
       <div className="simple-spinner" />
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0, fontWeight: 600 }}>Connecting to room {roomCode}...</p>
     </div>
   );
   if (error) return (
-    <div className="container modern-card" style={{ maxWidth: '500px', margin: '4rem auto', textAlign: 'center', padding: '3rem' }}>
+    <div className="container modern-card page-state-card">
       <h2 style={{ color: 'var(--text-primary)' }}>Error: {error}</h2>
       <button className="button-primary" onClick={onLeave} style={{ marginTop: '1rem' }}>Back to Home</button>
     </div>
   );
   if (!room) return (
-    <div className="container modern-card" style={{ maxWidth: '500px', margin: '4rem auto', textAlign: 'center', padding: '3rem' }}>
+    <div className="container modern-card page-state-card">
       <h2 style={{ color: 'var(--text-primary)' }}>Room not found</h2>
       <button className="button-primary" onClick={onLeave} style={{ marginTop: '1rem' }}>Back to Home</button>
     </div>
   );
 
   return (
-    <div className="container participant-page" style={{ maxWidth: '640px', margin: '1rem auto', padding: '1rem' }}>
+    <div className="container participant-page">
       {/* Remote Header */}
       <div className="modern-card" style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
         <div>
@@ -207,7 +207,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
           {sortedQueue.length === 0 ? (
             <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '1.5rem 0' }}>The queue is currently empty!</p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '420px', overflowY: 'auto' }}>
+            <div className="participant-queue-list">
               {sortedQueue.map((item, index) => {
                 const isCurrent = room.playback.currentQueueId === item.queueId;
                 return (

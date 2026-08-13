@@ -89,7 +89,11 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
           </div>
 
           <div className="landing-hero-visual">
-            <div className="landing-device-cluster">
+            <div className="landing-device-cluster"
+            
+            
+            
+            >
               <div className="landing-phone-glow" aria-hidden="true" />
 
               <div className="landing-device-wrap landing-device-wrap--tv">

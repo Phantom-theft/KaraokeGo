@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { type SongSearchResult } from '../services/youtube';
@@ -39,6 +40,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   // depend on "the container actually exists in the DOM" as real state
   // instead of silently missing it.
   const playerContainerRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(null);
   const setPlayerContainerNode = useCallback((node: HTMLDivElement | null) => {
     playerContainerRef.current = node;
@@ -79,6 +82,45 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
       updatePlayback({ status: 'playing' });
     }
   }, [updatePlayback]);
+
+  const getFullscreenElement = () =>
+    document.fullscreenElement ??
+    (document as Document & { webkitFullscreenElement?: Element }).webkitFullscreenElement ??
+    null;
+
+  const toggleFullscreen = useCallback(async () => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    try {
+      if (getFullscreenElement()) {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else {
+          const doc = document as Document & { webkitExitFullscreen?: () => Promise<void> };
+          await doc.webkitExitFullscreen?.();
+        }
+      } else if (stage.requestFullscreen) {
+        await stage.requestFullscreen();
+      } else {
+        const el = stage as HTMLDivElement & { webkitRequestFullscreen?: () => Promise<void> };
+        await el.webkitRequestFullscreen?.();
+      }
+    } catch (err) {
+      console.warn('[Fullscreen] Toggle failed', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    const syncFullscreen = () => {
+      setIsFullscreen(getFullscreenElement() === stageRef.current);
+    };
+    document.addEventListener('fullscreenchange', syncFullscreen);
+    document.addEventListener('webkitfullscreenchange', syncFullscreen);
+    return () => {
+      document.removeEventListener('fullscreenchange', syncFullscreen);
+      document.removeEventListener('webkitfullscreenchange', syncFullscreen);
+    };
+  }, []);
 
   // Load the YouTube IFrame Player API once. We rely on its real onStateChange
   // (ENDED) event to know when a song actually finishes, instead of guessing
@@ -361,20 +403,20 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   }, [room?.playback.status, currentSong?.queueId, updatePlayback]);
 
   if (loading) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1.1rem', background: 'var(--bg-main)' }}>
+    <div className="page-loading">
       <div className="simple-spinner" />
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0, fontWeight: 600, letterSpacing: '0.01em' }}>Setting up your stage…</p>
     </div>
   );
   if (error) return (
-    <div className="modern-card" style={{ maxWidth: '440px', margin: '4rem auto', textAlign: 'center', padding: '2.75rem 2.25rem' }}>
+    <div className="modern-card page-state-card">
       <div style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>⚠️</div>
       <h2 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', color: 'var(--text-primary)' }}>Something went wrong</h2>
       <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{error}</p>
     </div>
   );
   if (!room) return (
-    <div className="modern-card" style={{ maxWidth: '440px', margin: '4rem auto', textAlign: 'center', padding: '2.75rem 2.25rem' }}>
+    <div className="modern-card page-state-card">
       <div style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>🔍</div>
       <h2 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', color: 'var(--text-primary)' }}>Room missing or expired</h2>
       <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Head back and start a new stage room.</p>
@@ -392,12 +434,28 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
       <div className="host-layout">
 
         {/* ════════════ ROUNDED VIDEO STAGE ════════════ */}
-        <div className="host-stage">
+        <div className="host-stage" ref={stageRef}>
           <div className="host-stage-inner">
             <div
               ref={setPlayerContainerNode}
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             />
+
+            {currentSong && countdown === null && !videoBlocked && (
+              <button
+                type="button"
+                className="host-fullscreen-btn"
+                onClick={toggleFullscreen}
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+              >
+                {isFullscreen ? (
+                  <Minimize2 size={18} strokeWidth={2.2} />
+                ) : (
+                  <Maximize2 size={18} strokeWidth={2.2} />
+                )}
+              </button>
+            )}
 
             {/* Click-to-start icon — small, not a full-screen blocker. The
                 player is only cued (paused) until this is clicked, so no
@@ -427,59 +485,16 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             )}
 
             {countdown !== null && nextUpInfo && (
-              <div style={{
-                position: 'absolute', inset: 0,
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(18, 18, 18, 0.94)',
-                zIndex: 20,
-                animation: 'hostFadeIn 0.3s ease-out',
-                padding: '2rem',
-                textAlign: 'center',
-              }}>
-                <div style={{
-                  fontSize: '0.85rem',
-                  fontWeight: 800,
-                  color: 'var(--accent)',
-                  letterSpacing: '3px',
-                  textTransform: 'uppercase',
-                  marginBottom: '1.1rem',
-                }}>
-                  Up Next
-                </div>
-                <div style={{
-                  fontSize: '2.3rem',
-                  fontWeight: 900,
-                  color: 'var(--text-primary)',
-                  marginBottom: '0.75rem',
-                  maxWidth: '80%',
-                  lineHeight: 1.2,
-                  letterSpacing: '-0.02em',
-                }}>
-                  {nextUpInfo.title}
-                </div>
-                <div style={{
-                  fontSize: '1.05rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '2.25rem',
-                }}>
-                  Requested by <strong style={{ color: 'var(--accent)', fontWeight: 700 }}>{nextUpInfo.addedBy}</strong>
-                </div>
-                <div style={{
-                  width: '86px',
-                  height: '86px',
-                  borderRadius: '50%',
-                  border: '1px solid rgba(176, 141, 87, 0.4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '2.75rem',
-                  fontWeight: 900,
-                  color: 'var(--text-primary)',
-                  boxShadow: 'none',
-                  background: 'rgba(122, 46, 58, 0.25)',
-                }}>
-                  {countdown}
+              <div className="host-countdown-overlay">
+                <p className="host-countdown-kicker">Up Next</p>
+                <h3 className="host-countdown-title">{nextUpInfo.title}</h3>
+                <p className="host-countdown-requester">
+                  Requested by <strong>{nextUpInfo.addedBy}</strong>
+                </p>
+                <div className="host-countdown-ring" aria-live="polite" aria-atomic="true">
+                  <span key={countdown} className="host-countdown-number">
+                    {countdown}
+                  </span>
                 </div>
               </div>
             )}
@@ -820,8 +835,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           onClick={() => setShowQrModal(false)}
         >
           <div
-            className="modern-card"
-            style={{ maxWidth: '360px', width: '100%', textAlign: 'center', padding: '2.25rem 2rem' }}
+            className="modern-card host-qr-modal-card"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 style={{ marginTop: 0, fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
