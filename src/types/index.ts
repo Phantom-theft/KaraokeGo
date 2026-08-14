@@ -17,6 +17,7 @@ export interface Participant {
   name: string;
   isHost: boolean;
   joinedAt: number;
+  online?: boolean;
 }
 
 export interface PlaybackState {

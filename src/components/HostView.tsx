@@ -22,10 +22,24 @@ interface HostViewProps {
 }
 
 export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, onLeave }) => {
-  const { room, loading, error, addToQueue, removeFromQueue, updatePlayback } = useRealtimeRoom(roomCode, userId);
+  const { room, loading, error, endRoom, addToQueue, removeFromQueue, updatePlayback } = useRealtimeRoom(roomCode, userId);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
   const [hostAddedSongId, setHostAddedSongId] = useState<string | null>(null);
+  const [isExiting, setIsExiting] = useState(false);
+
+  const handleExitStage = useCallback(() => {
+    if (!onLeave || isExiting) return;
+    setIsExiting(true);
+    window.setTimeout(async () => {
+      try {
+        await endRoom();
+      } catch (err) {
+        console.error('[Host] Failed to end room:', err);
+      }
+      onLeave();
+    }, 380);
+  }, [onLeave, isExiting, endRoom]);
 
   const HOST_SUGGESTED_SONGS = [
     { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', artist: 'Queen', thumbnail: 'https://i.ytimg.com/vi/fJ9rUzIMcZQ/hqdefault.jpg', duration: 354 },
@@ -402,34 +416,37 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
     return () => clearInterval(interval);
   }, [room?.playback.status, currentSong?.queueId, updatePlayback]);
 
-  if (loading) return (
+  if (loading && !isExiting) return (
     <div className="page-loading">
       <div className="simple-spinner" />
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0, fontWeight: 600, letterSpacing: '0.01em' }}>Setting up your stage…</p>
     </div>
   );
-  if (error) return (
+  if (error && !isExiting) return (
     <div className="modern-card page-state-card">
       <div style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>⚠️</div>
       <h2 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', color: 'var(--text-primary)' }}>Something went wrong</h2>
       <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{error}</p>
     </div>
   );
-  if (!room) return (
+  if (!room && !isExiting) return (
     <div className="modern-card page-state-card">
       <div style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>🔍</div>
       <h2 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', color: 'var(--text-primary)' }}>Room missing or expired</h2>
       <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Head back and start a new stage room.</p>
     </div>
   );
+  if (!room) {
+    return <div className="host-page is-exiting" aria-hidden="true" />;
+  }
 
   const isPlaying = room.playback.status === 'playing';
   const duration = currentSong?.duration || 240;
   const progressPct = currentSong ? Math.min(100, (localCurrentTime / duration) * 100) : 0;
-  const onlineCount = Object.keys(room.participants).length;
+  const onlineCount = Object.values(room.participants).filter((p) => p.online !== false).length;
 
   return (
-    <div className="host-page">
+    <div className={`host-page${isExiting ? ' is-exiting' : ''}`}>
       {/* ── Main Body: Video (left) + Sidebar (right) ── */}
       <div className="host-layout">
 
@@ -821,7 +838,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 </div>
                 {onLeave && (
                   <button
-                    onClick={onLeave}
+                    onClick={handleExitStage}
+                    disabled={isExiting}
                     className="button-secondary host-icon-btn"
                     style={{ padding: '0.35rem 0.75rem', fontSize: '0.76rem', width: '100%', marginTop: '0.15rem' }}
                   >

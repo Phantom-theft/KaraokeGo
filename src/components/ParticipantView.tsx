@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { type SongSearchResult } from '../services/youtube';
 import type { Song } from '../types';
 import { SearchModal } from './SearchModal';
+import { PartyEndedView } from './PartyEndedView';
 
 interface ParticipantViewProps {
   roomCode: string;
@@ -17,10 +18,27 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
   userName,
   onLeave,
 }) => {
-  const { room, loading, error, addToQueue, removeFromQueue } = useRealtimeRoom(roomCode, userId);
+  const { room, loading, error, roomEnded, leaveRoom, addToQueue, removeFromQueue } = useRealtimeRoom(roomCode, userId);
   const [selectedTab, setSelectedTab] = useState<'search' | 'queue'>('search');
   const [addSuccessMessage, setAddSuccessMessage] = useState<string | null>(null);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  const handleLeave = useCallback(async () => {
+    try {
+      await leaveRoom();
+    } catch (err) {
+      console.error('[Participant] Failed to leave room:', err);
+    }
+    onLeave();
+  }, [leaveRoom, onLeave]);
+
+  useEffect(() => {
+    const onPageHide = () => {
+      leaveRoom().catch(() => {});
+    };
+    window.addEventListener('pagehide', onPageHide);
+    return () => window.removeEventListener('pagehide', onPageHide);
+  }, [leaveRoom]);
 
   const handleAddSong = (song: SongSearchResult) => {
     const songData: Song = {
@@ -50,6 +68,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
   const currentSong = getCurrentSong();
   const sortedQueue = room ? Object.values(room.queue).sort((a, b) => a.timestamp - b.timestamp) : [];
 
+  if (roomEnded) return <PartyEndedView onGoHome={handleLeave} />;
   if (loading) return (
     <div className="page-loading">
       <div className="simple-spinner" />
@@ -59,13 +78,13 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
   if (error) return (
     <div className="container modern-card page-state-card">
       <h2 style={{ color: 'var(--text-primary)' }}>Error: {error}</h2>
-      <button className="button-primary" onClick={onLeave} style={{ marginTop: '1rem' }}>Back to Home</button>
+      <button className="button-primary" onClick={handleLeave} style={{ marginTop: '1rem' }}>Back to Home</button>
     </div>
   );
   if (!room) return (
     <div className="container modern-card page-state-card">
       <h2 style={{ color: 'var(--text-primary)' }}>Room not found</h2>
-      <button className="button-primary" onClick={onLeave} style={{ marginTop: '1rem' }}>Back to Home</button>
+      <button className="button-primary" onClick={handleLeave} style={{ marginTop: '1rem' }}>Back to Home</button>
     </div>
   );
 
@@ -82,7 +101,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
             {userName} (Remote Controller)
           </div>
         </div>
-        <button onClick={onLeave} className="button-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}>
+        <button onClick={handleLeave} className="button-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}>
           Leave
         </button>
       </div>

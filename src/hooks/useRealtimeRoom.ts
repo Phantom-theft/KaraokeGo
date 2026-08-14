@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   collection,
   doc,
@@ -25,20 +25,27 @@ function readLocalRoom(code: string): RoomState | null {
   } catch { return null; }
 }
 
-export function useRealtimeRoom(roomCode: string | null, _userId: string | null) {
+export function useRealtimeRoom(roomCode: string | null, userId: string | null) {
   const [room, setRoom] = useState<RoomState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [roomEnded, setRoomEnded] = useState(false);
   const roomIdRef = useRef<string | null>(null);
+  const userIdRef = useRef<string | null>(userId);
+  const roomCodeRef = useRef<string | null>(roomCode);
+  userIdRef.current = userId;
+  roomCodeRef.current = roomCode;
 
   useEffect(() => {
     if (!roomCode) {
       setRoom(null);
       setLoading(false);
+      setRoomEnded(false);
       return;
     }
 
     setLoading(true);
+    setRoomEnded(false);
     let bc: BroadcastChannel | null = null;
     if ('BroadcastChannel' in window) {
       bc = new BroadcastChannel('karaoke_bc_' + roomCode);
@@ -52,8 +59,7 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
     try {
       const roomQuery = query(
         collection(db, 'rooms'),
-        where('roomCode', '==', roomCode.toUpperCase()),
-        where('status', '==', 'active')
+        where('roomCode', '==', roomCode.toUpperCase())
       );
 
       const unsubRoom = onSnapshot(roomQuery,
@@ -63,8 +69,11 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
             if (local) {
               setRoom(local);
               setError(null);
+              setRoomEnded(false);
             } else {
-              setError('Room not found or has ended');
+              setRoom(null);
+              setError('Room not found');
+              setRoomEnded(false);
             }
             setLoading(false);
             return;
@@ -72,6 +81,15 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
 
           const roomDoc = roomSnap.docs[0];
           const roomData = roomDoc.data();
+
+          if (roomData.status === 'ended') {
+            setRoom(null);
+            setRoomEnded(true);
+            setError(null);
+            setLoading(false);
+            return;
+          }
+
           const roomId = roomDoc.id;
           roomIdRef.current = roomId;
 
@@ -81,12 +99,13 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
               const participantsMap: Record<string, Participant> = {};
               pSnap.docs.forEach((pDoc) => {
                 const d = pDoc.data();
-                participantsMap[pDoc.id] = {
-                  id: pDoc.id,
-                  name: d.username || 'Anonymous',
-                  isHost: !!d.isHost,
-                  joinedAt: d.joinedAt?.toMillis?.() ?? Date.now(),
-                };
+                    participantsMap[pDoc.id] = {
+                      id: pDoc.id,
+                      name: d.username || 'Anonymous',
+                      isHost: !!d.isHost,
+                      joinedAt: d.joinedAt?.toMillis?.() ?? Date.now(),
+                      online: d.online !== false,
+                    };
               });
 
               const unsubQueue = onSnapshot(
@@ -130,6 +149,7 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
                   setRoom(newRoom);
                   setLoading(false);
                   setError(null);
+                  setRoomEnded(false);
                 },
                 (err) => {
                   console.error('[Firestore] Queue listener error:', err);
@@ -168,6 +188,32 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
     };
   }, [roomCode]);
 
+  const leaveRoom = useCallback(async (): Promise<void> => {
+    const id = userIdRef.current;
+    if (!id) return;
+
+    let roomId = roomIdRef.current;
+    if (!roomId && roomCodeRef.current) {
+      const roomSnap = await getDocs(
+        query(collection(db, 'rooms'), where('roomCode', '==', roomCodeRef.current.toUpperCase()))
+      );
+      if (!roomSnap.empty) roomId = roomSnap.docs[0].id;
+    }
+    if (!roomId) return;
+
+    roomIdRef.current = roomId;
+    const participantRef = doc(db, 'rooms', roomId, 'participants', id);
+
+    // Mark offline (works even when Firestore rules block delete)
+    await setDoc(participantRef, { online: false }, { merge: true });
+
+    try {
+      await deleteDoc(participantRef);
+    } catch {
+      // Delete may be denied by rules; online: false above is enough for the count
+    }
+  }, []);
+
   const createRoom = async (hostName: string, hostId: string): Promise<string> => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let code = '';
@@ -189,6 +235,7 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
     await setDoc(doc(db, 'rooms', roomId, 'participants', hostId), {
       username: hostName,
       isHost: true,
+      online: true,
       joinedAt: serverTimestamp(),
     });
 
@@ -210,8 +257,9 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
     await setDoc(doc(db, 'rooms', roomId, 'participants', id), {
       username: name,
       isHost: false,
+      online: true,
       joinedAt: serverTimestamp(),
-    });
+    }, { merge: true });
   };
 
   const addToQueue = async (song: Song, addedBy: string): Promise<void> => {
@@ -264,5 +312,16 @@ export function useRealtimeRoom(roomCode: string | null, _userId: string | null)
     }
   };
 
-  return { room, loading, error, createRoom, joinRoom, addToQueue, removeFromQueue, updatePlayback };
+  const endRoom = async (): Promise<void> => {
+    const roomId = roomIdRef.current;
+    if (!roomId) return;
+
+    await updateDoc(doc(db, 'rooms', roomId), {
+      status: 'ended',
+      endedAt: serverTimestamp(),
+      playbackStatus: 'idle',
+    });
+  };
+
+  return { room, loading, error, roomEnded, createRoom, joinRoom, leaveRoom, addToQueue, removeFromQueue, updatePlayback, endRoom };
 }
