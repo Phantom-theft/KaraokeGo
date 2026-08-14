@@ -608,14 +608,14 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             <div className="host-panel-title">
               Queue ({sortedQueue.length})
             </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem 0.7rem' }}>
+            <div className="host-queue-scroll">
               {sortedQueue.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '1.25rem 1rem', color: 'var(--text-muted)' }}>
+                <div className="host-queue-empty">
                   <div style={{ fontSize: '1.4rem', marginBottom: '0.3rem' }}>📭</div>
                   <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>Queue is empty</div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                <div className="host-queue-list">
                   {sortedQueue.map((item, index) => {
                     const isCurrent = room.playback.currentQueueId === item.queueId;
                     return (
@@ -686,18 +686,15 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   readOnly
                   placeholder="Search song title or artist..."
                   className="modern-input"
-                  style={{ paddingLeft: '2.2rem', paddingRight: '2.2rem', fontSize: '0.88rem', cursor: 'pointer' }}
+                  style={{ paddingLeft: '2.2rem', paddingRight: '0.85rem', fontSize: '0.88rem', cursor: 'pointer' }}
                   onClick={() => setIsSearchModalOpen(true)}
                 />
-                <span style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.9rem' }}>
-                  🎤
-                </span>
               </div>
             </div>
             {/* Suggested Songs 2×2 grid */}
             <div style={{ padding: '0.5rem 0.7rem 0.7rem 0.7rem' }}>
               <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.55px', color: 'var(--accent)', marginBottom: '0.5rem' }}>
-                💡 Suggest Song
+                Suggest Song
               </div>
               <div style={{
                 display: 'grid',
@@ -779,7 +776,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 style={{ flex: 1, padding: '0.5rem 0.7rem', fontSize: '0.85rem' }}
                 disabled={!currentSong}
               >
-                {isPlaying ? '⏸ Pause' : '▶ Play'}
+                {isPlaying ? 'Pause' : 'Play'}
               </button>
               <button
                 onClick={handleSkipNext}
@@ -787,10 +784,10 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 style={{ flex: 1, padding: '0.5rem 0.7rem', fontSize: '0.85rem' }}
                 disabled={!currentSong}
               >
-                ⏭ Skip
+                Skip
               </button>
               <span className="host-online-pill">
-                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: onlineCount > 0 ? '#B08D57' : 'rgba(243,239,232,0.35)', display: 'inline-block' }} />
+                <span className={`host-online-dot${onlineCount > 0 ? ' is-online' : ''}`} />
                 {onlineCount} online
               </span>
             </div>
