@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Maximize2, Minimize2 } from 'lucide-react';
+import { Maximize2, Minimize2, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { type SongSearchResult } from '../services/youtube';
@@ -621,16 +621,9 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                     return (
                       <div
                         key={item.queueId}
-                        className={`host-list-item${isCurrent ? ' is-current' : ''}`}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0.5rem 0.6rem',
-                          borderRadius: '11px',
-                        }}
+                        className={`host-list-item host-queue-item${isCurrent ? ' is-current' : ''}`}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', minWidth: 0, flex: 1, position: 'relative', zIndex: 1 }}>
                           <span style={{
                             width: '20px', height: '20px', borderRadius: '6px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -644,11 +637,29 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                             <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {item.title}
                             </div>
-                            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '1px' }}>
-                              {item.addedBy}
-                            </div>
+                            {isCurrent ? (
+                              <div className="host-queue-now">
+                                <span className="host-queue-eq" aria-hidden="true">
+                                  <span /><span /><span />
+                                </span>
+                                Now Playing
+                              </div>
+                            ) : (
+                              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '1px' }}>
+                                {item.addedBy}
+                              </div>
+                            )}
                           </div>
                         </div>
+                        <button
+                          type="button"
+                          className="host-queue-remove"
+                          aria-label={`Remove ${item.title} from queue`}
+                          title="Remove from queue"
+                          onClick={() => removeFromQueue(item.queueId)}
+                        >
+                          <X size={14} strokeWidth={2.5} />
+                        </button>
                       </div>
                     );
                   })}

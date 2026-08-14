@@ -1312,8 +1312,111 @@ button {
 }
 
 .host-list-item.is-current {
-  border-color: rgba(122, 46, 58, 0.7) !important;
-  background: rgba(122, 46, 58, 0.18) !important;
+  border-color: rgba(176, 141, 87, 0.55) !important;
+  background:
+    linear-gradient(90deg, rgba(122, 46, 58, 0.42) 0%, rgba(122, 46, 58, 0.18) 55%, rgba(18, 18, 18, 0.75) 100%) !important;
+  box-shadow: inset 3px 0 0 0 var(--accent) !important;
+}
+
+.host-queue-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 11px;
+  position: relative;
+  overflow: hidden;
+}
+
+.host-queue-item.is-current::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(176, 141, 87, 0.08) 50%,
+    transparent 60%
+  );
+  background-size: 220% 100%;
+  animation: hostQueueSheen 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.host-queue-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.host-queue-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.7rem;
+}
+
+.host-queue-eq span {
+  width: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+  animation: hostQueueEq 0.85s ease-in-out infinite;
+}
+
+.host-queue-eq span:nth-child(1) { height: 35%; animation-delay: 0s; }
+.host-queue-eq span:nth-child(2) { height: 70%; animation-delay: 0.15s; }
+.host-queue-eq span:nth-child(3) { height: 45%; animation-delay: 0.3s; }
+
+.host-queue-remove {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid rgba(176, 141, 87, 0.35);
+  background: rgba(18, 18, 18, 0.85);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.host-queue-remove:hover {
+  background: rgba(122, 46, 58, 0.85);
+  border-color: rgba(122, 46, 58, 0.9);
+  color: #f8f4ef;
+}
+
+.host-queue-remove:active {
+  transform: scale(0.94);
+}
+
+@keyframes hostQueueEq {
+  0%, 100% { transform: scaleY(0.45); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes hostQueueSheen {
+  0% { background-position: 120% 0; }
+  100% { background-position: -40% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .host-queue-item.is-current::before,
+  .host-queue-eq span {
+    animation: none;
+  }
 }
 
 .host-suggest-card {
