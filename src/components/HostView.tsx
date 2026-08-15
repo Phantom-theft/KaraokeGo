@@ -44,10 +44,10 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   }, [onLeave, isExiting, endRoom]);
 
   const HOST_SUGGESTED_SONGS = [
-    { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', artist: 'Queen', thumbnail: 'https://i.ytimg.com/vi/fJ9rUzIMcZQ/hqdefault.jpg', duration: 354 },
-    { id: 'rYEDA3JcQqw', title: 'Rolling in the Deep', artist: 'Adele', thumbnail: 'https://i.ytimg.com/vi/rYEDA3JcQqw/hqdefault.jpg', duration: 228 },
-    { id: 'JGwWNGJdvx8', title: 'Shape of You', artist: 'Ed Sheeran', thumbnail: 'https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg', duration: 233 },
-    { id: 'L0MK7qz13bU', title: 'Sweet Caroline', artist: 'Neil Diamond', thumbnail: 'https://i.ytimg.com/vi/L0MK7qz13bU/hqdefault.jpg', duration: 202 },
+    { id: 'tYPAxX8fdzQ', title: 'Two Less Lonely People', artist: 'Air Supply', thumbnail: 'https://i.ytimg.com/vi/tYPAxX8fdzQ/hqdefault.jpg', duration: 0 },
+    { id: 'aopznAD6m9w', title: 'My Love', artist: 'Westlife', thumbnail: 'https://i.ytimg.com/vi/aopznAD6m9w/hqdefault.jpg', duration: 0 },
+    { id: 'h0oahkr7dBk', title: 'As Long As You Love Me', artist: 'Backstreet Boys', thumbnail: 'https://i.ytimg.com/vi/h0oahkr7dBk/hqdefault.jpg', duration: 0 },
+    { id: 'VQJKXVy67K0', title: "Don't Forget To Remember", artist: 'Bee Gees', thumbnail: 'https://i.ytimg.com/vi/VQJKXVy67K0/hqdefault.jpg', duration: 0 },
   ];
 
   // playerContainerRef is kept for direct/imperative access (e.g. inside
