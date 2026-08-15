@@ -771,10 +771,11 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
+                        height: '100%',
                       }}
                     >
                       {/* 16:9 Thumbnail */}
-                      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: 'var(--bg-inset)', overflow: 'hidden' }}>
+                      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: 'var(--bg-inset)', overflow: 'hidden', flexShrink: 0 }}>
                         <img
                           src={song.thumbnail}
                           alt={song.title}
@@ -782,8 +783,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                         />
                       </div>
                       {/* Card Body */}
-                      <div style={{ padding: '0.4rem 0.5rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
-                        <div style={{ fontWeight: 800, fontSize: '0.76rem', color: 'var(--text-primary)', lineHeight: 1.25, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                      <div style={{ padding: '0.4rem 0.5rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1, minHeight: 0 }}>
+                        <div style={{ fontWeight: 800, fontSize: '0.76rem', color: 'var(--text-primary)', lineHeight: 1.25, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minHeight: '1.9em' }}>
                           {song.title}
                         </div>
                         <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
@@ -798,7 +799,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                           }}
                           className="button-primary"
                           style={{
-                            marginTop: '0.25rem',
+                            marginTop: 'auto',
                             padding: '0.3rem 0.5rem',
                             fontSize: '0.7rem',
                             borderRadius: '8px',
