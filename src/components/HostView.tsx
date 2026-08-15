@@ -175,10 +175,41 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
     addToQueue(songData, `${userName} (Host)`);
   };
 
+  // Opening search pauses the current song so audio doesn't keep playing
+  // under the modal while the host browses the library. We trust the YouTube
+  // player state (not only room.playback.status) because after pause→play
+  // cycles those can briefly desync and skip the pause entirely.
+  const handleOpenSearch = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setIsSearchModalOpen(true);
+
+    const player = playerRef.current;
+    // YT.PlayerState: PLAYING = 1, BUFFERING = 3
+    const ytState = typeof player?.getPlayerState === 'function' ? player.getPlayerState() : null;
+    const isYtActive = ytState === 1 || ytState === 3;
+    const roomStatus = roomRef.current?.playback.status;
+    const roomPlaying = roomStatus === 'playing';
+
+    if (!isYtActive && !roomPlaying) return;
+
+    player?.pauseVideo();
+    if (roomRef.current) {
+      roomRef.current = {
+        ...roomRef.current,
+        playback: { ...roomRef.current.playback, status: 'paused' },
+      };
+    }
+    if (roomStatus !== 'paused') {
+      updatePlayback({ status: 'paused' });
+    }
+  }, [updatePlayback]);
+
   const handlePlayPause = () => {
     if (!room) return;
 
-    const currentlyPlaying = room.playback.status === 'playing';
+    const currentlyPlaying = roomRef.current?.playback.status === 'playing'
+      || room.playback.status === 'playing';
+    const nextStatus = currentlyPlaying ? 'paused' : 'playing';
     if (playerRef.current) {
       if (currentlyPlaying) {
         playerRef.current.pauseVideo();
@@ -186,9 +217,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
         playerRef.current.playVideo();
       }
     }
-    updatePlayback({
-      status: currentlyPlaying ? 'paused' : 'playing',
-    });
+    if (roomRef.current) {
+      roomRef.current = {
+        ...roomRef.current,
+        playback: { ...roomRef.current.playback, status: nextStatus },
+      };
+    }
+    updatePlayback({ status: nextStatus });
   };
 
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -691,7 +726,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               Search
             </div>
             <div style={{ padding: '0.6rem 0.7rem 0.4rem 0.7rem', flexShrink: 0 }}>
-              <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setIsSearchModalOpen(true)}>
+              <div style={{ position: 'relative', cursor: 'pointer' }} onClick={handleOpenSearch}>
                 <svg
                   width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
                   style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
@@ -703,8 +738,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   readOnly
                   placeholder="Search song title or artist..."
                   className="modern-input"
-                  style={{ paddingLeft: '2.2rem', paddingRight: '0.85rem', fontSize: '0.88rem', cursor: 'pointer' }}
-                  onClick={() => setIsSearchModalOpen(true)}
+                  style={{ paddingLeft: '2.2rem', paddingRight: '0.85rem', fontSize: '0.88rem', cursor: 'pointer', pointerEvents: 'none' }}
                 />
               </div>
             </div>

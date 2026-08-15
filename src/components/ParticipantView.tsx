@@ -191,9 +191,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
       {selectedTab === 'search' && (
         <div className="modern-card" style={{ padding: '1.75rem', textAlign: 'center' }}>
           <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setIsSearchModalOpen(true)}>
-            <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.1rem', opacity: 0.7 }}>
-              🔎
-            </span>
+            <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.1rem', opacity: 0.7 }}/>
             <input
               type="text"
               readOnly
@@ -208,9 +206,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
               }}
               onClick={() => setIsSearchModalOpen(true)}
             />
-            <span style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.15rem' }}>
-              🎤
-            </span>
+            <span style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.15rem' }}/>
           </div>
 
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.86rem', marginTop: '1.1rem', fontWeight: 600 }}>
