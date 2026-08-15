@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { searchKaraokeTracks, type SongSearchResult } from '../services/youtube';
+import { Wave } from './ui/wave';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -198,7 +199,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.35rem' }}>
           {isSearching && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 0', gap: '1rem' }}>
-              <div className="simple-spinner" />
+              <Wave className="size-10" />
               <p style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1rem', margin: 0 }}>
                 Searching YouTube Karaoke Library…
               </p>

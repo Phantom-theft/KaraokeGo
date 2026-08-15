@@ -133,26 +133,21 @@ button {
   50% { transform: translateY(-6px); }
 }
 
-@keyframes spinGlow {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 .floating-element {
   animation: floatAnim 4s ease-in-out infinite;
   max-width: 100%;
   box-sizing: border-box;
 }
 
-/* Simple Spinner */
-.simple-spinner {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 4px solid rgba(176, 141, 87, 0.2);
-  border-top-color: var(--accent);
-  box-shadow: none;
-  animation: spinGlow 0.8s linear infinite;
+/* Loading wave bars use Wave component — keep keyframe available globally as fallback */
+@keyframes loading-ui-wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.6);
+  }
 }
 
 /* Header Navbar */
@@ -1925,6 +1920,11 @@ button {
   letter-spacing: 0.28em;
   font-weight: 700;
   text-align: center;
+}
+
+.setup-otp {
+  justify-content: center;
+  width: 100%;
 }
 
 .form-read-only-pill {

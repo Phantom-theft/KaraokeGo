@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Mic2, Music2, Smartphone, Search, ListMusic, Trash2, Radio, KeyRound } from 'lucide-react';
+import { ArrowLeft, Mic2, Music2, Smartphone, Search, ListMusic, Trash2, Radio } from 'lucide-react';
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp';
 
 interface JoinSetupViewProps {
   onJoin: (roomCode: string, userId: string, userName: string) => void;
@@ -36,11 +38,14 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
 
   const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const code = joinCode.trim().toUpperCase();
+    if (code.length !== 4) {
+      setActionError('Please enter the 4-character room code.');
+      return;
+    }
     setLoadingAction(true);
     setActionError(null);
     try {
-      const code = joinCode.trim().toUpperCase();
-      if (!code) return;
       const name = joinName.trim() || 'Guest';
       const userId = 'user_' + Math.random().toString(36).substring(2, 9);
       await joinRoom(code, name, userId);
@@ -84,21 +89,23 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
 
             <form onSubmit={handleJoinSubmit} className="setup-form">
               <div className="form-field">
-                <label htmlFor="joinCodeInput" className="form-label">Room code</label>
-                <div className="setup-input-wrap">
-                  <KeyRound size={16} aria-hidden="true" />
-                  <input
-                    id="joinCodeInput"
-                    type="text"
-                    value={joinCode}
-                    onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                    placeholder="ABCD"
-                    maxLength={4}
-                    className="setup-input setup-room-code"
-                    required
-                    autoFocus={!joinCode}
-                  />
-                </div>
+                <span className="form-label" id="joinCodeLabel">Room code</span>
+                <InputOTP
+                  maxLength={4}
+                  value={joinCode}
+                  onChange={(value) => setJoinCode(value.toUpperCase())}
+                  pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                  autoFocus={!joinCode}
+                  aria-label="Room code"
+                  containerClassName="setup-otp"
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                  </InputOTPGroup>
+                </InputOTP>
               </div>
 
               <div className="form-field">
@@ -114,7 +121,7 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
                 />
               </div>
 
-              <button type="submit" className="setup-submit-btn" disabled={loadingAction}>
+              <button type="submit" className="setup-submit-btn" disabled={loadingAction || joinCode.length !== 4}>
                 {loadingAction ? 'Joining Room...' : 'Join Party'}
                 {!loadingAction && <Radio size={16} aria-hidden="true" />}
               </button>

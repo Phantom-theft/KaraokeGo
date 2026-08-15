@@ -4,6 +4,7 @@ import { type SongSearchResult } from '../services/youtube';
 import type { Song } from '../types';
 import { SearchModal } from './SearchModal';
 import { PartyEndedView } from './PartyEndedView';
+import { Wave } from './ui/wave';
 
 interface ParticipantViewProps {
   roomCode: string;
@@ -71,7 +72,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
   if (roomEnded) return <PartyEndedView onGoHome={handleLeave} />;
   if (loading) return (
     <div className="page-loading">
-      <div className="simple-spinner" />
+      <Wave className="size-10" />
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0, fontWeight: 600 }}>Connecting to room {roomCode}...</p>
     </div>
   );

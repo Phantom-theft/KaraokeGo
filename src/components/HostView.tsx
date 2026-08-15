@@ -5,6 +5,7 @@ import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { type SongSearchResult } from '../services/youtube';
 import type { Song, QueueItem } from '../types';
 import { SearchModal } from './SearchModal';
+import { Wave } from './ui/wave';
 
 // The YouTube IFrame Player API attaches itself to window at runtime.
 declare global {
@@ -453,7 +454,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
 
   if (loading && !isExiting) return (
     <div className="page-loading">
-      <div className="simple-spinner" />
+      <Wave className="size-10" />
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0, fontWeight: 600, letterSpacing: '0.01em' }}>Setting up your stage…</p>
     </div>
   );
@@ -557,7 +558,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: '#121212',
               }}>
-                <div className="simple-spinner" />
+                <Wave className="size-10" />
               </div>
             )}
 
