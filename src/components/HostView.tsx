@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Maximize2, Minimize2, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
-import { type SongSearchResult } from '../services/youtube';
+import { type SongSearchResult, filterEmbeddableSongs } from '../services/youtube';
 import type { Song, QueueItem } from '../types';
 import { SearchModal } from './SearchModal';
 import { Wave } from './ui/wave';
@@ -23,12 +23,28 @@ interface HostViewProps {
   onLeave?: () => void;
 }
 
+const HOST_SUGGESTED_SONGS: SongSearchResult[] = [
+  { id: 'tYPAxX8fdzQ', title: 'Two Less Lonely People', artist: 'Air Supply', thumbnail: 'https://i.ytimg.com/vi/tYPAxX8fdzQ/hqdefault.jpg', duration: 0, isKaraoke: true },
+  { id: 'aopznAD6m9w', title: 'My Love', artist: 'Westlife', thumbnail: 'https://i.ytimg.com/vi/aopznAD6m9w/hqdefault.jpg', duration: 0, isKaraoke: true },
+  { id: 'h0oahkr7dBk', title: 'As Long As You Love Me', artist: 'Backstreet Boys', thumbnail: 'https://i.ytimg.com/vi/h0oahkr7dBk/hqdefault.jpg', duration: 0, isKaraoke: true },
+  { id: 'VQJKXVy67K0', title: "Don't Forget To Remember", artist: 'Bee Gees', thumbnail: 'https://i.ytimg.com/vi/VQJKXVy67K0/hqdefault.jpg', duration: 0, isKaraoke: true },
+];
+
 export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, onLeave }) => {
   const { room, loading, error, endRoom, addToQueue, removeFromQueue, updatePlayback } = useRealtimeRoom(roomCode, userId);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
   const [hostAddedSongId, setHostAddedSongId] = useState<string | null>(null);
   const [isExiting, setIsExiting] = useState(false);
+  const [suggestedSongs, setSuggestedSongs] = useState<SongSearchResult[]>(HOST_SUGGESTED_SONGS);
+
+  useEffect(() => {
+    let cancelled = false;
+    filterEmbeddableSongs(HOST_SUGGESTED_SONGS, HOST_SUGGESTED_SONGS.length).then((ok) => {
+      if (!cancelled && ok.length > 0) setSuggestedSongs(ok);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   const handleExitStage = useCallback(() => {
     if (!onLeave || isExiting) return;
@@ -42,13 +58,6 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
       onLeave();
     }, 380);
   }, [onLeave, isExiting, endRoom]);
-
-  const HOST_SUGGESTED_SONGS = [
-    { id: 'tYPAxX8fdzQ', title: 'Two Less Lonely People', artist: 'Air Supply', thumbnail: 'https://i.ytimg.com/vi/tYPAxX8fdzQ/hqdefault.jpg', duration: 0 },
-    { id: 'aopznAD6m9w', title: 'My Love', artist: 'Westlife', thumbnail: 'https://i.ytimg.com/vi/aopznAD6m9w/hqdefault.jpg', duration: 0 },
-    { id: 'h0oahkr7dBk', title: 'As Long As You Love Me', artist: 'Backstreet Boys', thumbnail: 'https://i.ytimg.com/vi/h0oahkr7dBk/hqdefault.jpg', duration: 0 },
-    { id: 'VQJKXVy67K0', title: "Don't Forget To Remember", artist: 'Bee Gees', thumbnail: 'https://i.ytimg.com/vi/VQJKXVy67K0/hqdefault.jpg', duration: 0 },
-  ];
 
   // playerContainerRef is kept for direct/imperative access (e.g. inside
   // event handlers where we don't want a re-render). containerNode is the
@@ -630,7 +639,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
           {/* ── 0. NEXT TO PLAY Panel ── */}
           <div className="host-panel">
             <div className="host-panel-title">
-              <span>🎵</span> Next to Play
+              Next to Play
             </div>
             <div style={{ padding: '0.6rem 0.8rem' }}>
               {nextToPlaySong ? (
@@ -665,7 +674,6 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             <div className="host-queue-scroll">
               {sortedQueue.length === 0 ? (
                 <div className="host-queue-empty">
-                  <div style={{ fontSize: '1.4rem', marginBottom: '0.3rem' }}>📭</div>
                   <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>Queue is empty</div>
                 </div>
               ) : (
@@ -754,7 +762,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: '0.5rem',
               }}>
-                {HOST_SUGGESTED_SONGS.map((song) => {
+                {suggestedSongs.map((song) => {
                   const isAdded = hostAddedSongId === song.id;
                   return (
                     <div

@@ -16,7 +16,6 @@ const KARAOKE_KEYWORDS = ['karaoke', 'instrumental', 'minus one', 'sing along', 
 
 // Proxied via Vite dev server (vite.config.ts) to avoid CORS.
 // The Vite server forwards /api/innertube/* → https://www.youtube.com/youtubei/v1/*
-// This means Node.js makes the request to YouTube, not the browser — no CORS check.
 const INNERTUBE_SEARCH_URL = '/api/innertube/search?prettyPrint=false';
 
 const INNERTUBE_CONTEXT = {
@@ -29,6 +28,8 @@ const INNERTUBE_CONTEXT = {
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
   },
 };
+
+const embedCache = new Map<string, boolean>();
 
 function isKaraokeTitle(title: string): boolean {
   const lower = title.toLowerCase();
@@ -63,8 +64,47 @@ export async function fetchYouTubeVideoInfo(videoId: string): Promise<{ title: s
 }
 
 /**
+ * Returns true when a video allows embedding on external sites.
+ * YouTube oEmbed returns 401 when the owner disabled embedding — that is
+ * the same restriction that causes YT.Player error 101/150.
+ */
+export async function isVideoEmbeddable(videoId: string): Promise<boolean> {
+  if (!videoId) return false;
+  if (embedCache.has(videoId)) return embedCache.get(videoId)!;
+
+  let embeddable = false;
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+    );
+    embeddable = res.ok;
+  } catch (err) {
+    console.warn('[EmbedCheck] oEmbed failed for', videoId, err);
+    // On network failure, keep the song rather than emptying search results
+    embeddable = true;
+  }
+
+  embedCache.set(videoId, embeddable);
+  return embeddable;
+}
+
+/** Keep only videos that allow embedding (runs checks in parallel). */
+export async function filterEmbeddableSongs(
+  songs: SongSearchResult[],
+  limit = 12
+): Promise<SongSearchResult[]> {
+  const checks = await Promise.all(
+    songs.map(async (song) => ({
+      song,
+      ok: await isVideoEmbeddable(song.id),
+    }))
+  );
+  return checks.filter((c) => c.ok).map((c) => c.song).slice(0, limit);
+}
+
+/**
  * Search YouTube using InnerTube API — the same API YouTube's website uses.
- * Works directly in the browser, no CORS issues, no API key setup required.
+ * Results that disallow embedding are filtered out before returning.
  */
 export async function searchKaraokeTracks(userQuery: string): Promise<SongSearchResult[]> {
   const trimmed = userQuery.trim();
@@ -89,7 +129,6 @@ export async function searchKaraokeTracks(userQuery: string): Promise<SongSearch
 
     const data = await res.json();
 
-    // Navigate InnerTube response structure
     const sectionContents: any[] =
       data?.contents?.twoColumnSearchResultsRenderer
         ?.primaryContents?.sectionListRenderer?.contents ?? [];
@@ -120,19 +159,19 @@ export async function searchKaraokeTracks(userQuery: string): Promise<SongSearch
           isKaraoke: isKaraokeTitle(title),
         });
 
-        if (results.length >= 20) break;
+        // Collect extras so embed filtering still leaves enough results
+        if (results.length >= 30) break;
       }
-      if (results.length >= 20) break;
+      if (results.length >= 30) break;
     }
 
-    // Karaoke-tagged videos first. (Embeddability is checked live by the
-    // player itself in HostView's onError handler — codes 100/101/150 —
-    // which auto-skips unplayable songs, so no oEmbed pre-check is needed
-    // here.)
     results.sort((a, b) => (a.isKaraoke === b.isKaraoke ? 0 : a.isKaraoke ? -1 : 1));
 
-    console.log(`[InnerTube] Found ${results.length} results for "${query}"`);
-    return results;
+    const embeddable = await filterEmbeddableSongs(results, 16);
+    console.log(
+      `[InnerTube] Found ${results.length} results for "${query}", ${embeddable.length} embeddable`
+    );
+    return embeddable;
 
   } catch (e) {
     console.error('[InnerTube Search] Failed:', e);

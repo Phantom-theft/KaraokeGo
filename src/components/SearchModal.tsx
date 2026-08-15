@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { searchKaraokeTracks, type SongSearchResult } from '../services/youtube';
+import { searchKaraokeTracks, filterEmbeddableSongs, type SongSearchResult } from '../services/youtube';
 import { Wave } from './ui/wave';
 
 interface SearchModalProps {
@@ -68,8 +68,19 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SongSearchResult[]>([]);
+  const [popularSongs, setPopularSongs] = useState<SongSearchResult[]>(POPULAR_SUGGESTIONS);
   const [isSearching, setIsSearching] = useState(false);
   const [addedSongId, setAddedSongId] = useState<string | null>(null);
+
+  // Drop popular suggestions that disallow embedding
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    filterEmbeddableSongs(POPULAR_SUGGESTIONS, POPULAR_SUGGESTIONS.length).then((ok) => {
+      if (!cancelled && ok.length > 0) setPopularSongs(ok);
+    });
+    return () => { cancelled = true; };
+  }, [isOpen]);
 
   // Debounced search effect
   useEffect(() => {
@@ -109,7 +120,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   if (!isOpen) return null;
 
-  const displayList = searchQuery.trim() ? searchResults : POPULAR_SUGGESTIONS;
+  const displayList = searchQuery.trim() ? searchResults : popularSongs;
 
   return (
     <div
