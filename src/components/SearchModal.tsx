@@ -184,7 +184,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                 fontWeight: 700,
                 borderRadius: '9999px',
                 border: '1px solid rgba(176, 141, 87, 0.35)',
-                background: 'rgba(18, 18, 18, 0.65)',
+                background: 'var(--chip-bg)',
                 boxShadow: 'none',
                 color: 'var(--accent)',
                 cursor: 'pointer',
@@ -235,12 +235,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                     flexDirection: 'column',
                     borderRadius: '20px',
                     border: '1px solid rgba(176, 141, 87, 0.28)',
-                    background: 'rgba(18, 18, 18, 0.75)',
+                    background: 'var(--bg-card)',
                     boxShadow: 'none',
                   }}
                 >
                   {/* Large 16:9 Thumbnail Image */}
-                  <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', overflow: 'hidden', background: '#000000' }}>
+                  <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', overflow: 'hidden', background: 'var(--bg-inset)' }}>
                     <img
                       src={song.thumbnail}
                       alt={song.title}

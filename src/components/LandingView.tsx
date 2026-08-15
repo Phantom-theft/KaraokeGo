@@ -5,6 +5,7 @@ import phonePreview from '../assets/img/img1.png';
 import laptopPreview from '../assets/img/laptop_img.png';
 import tvPreview from '../assets/img/tv_img.png';
 import brandLogo from '../assets/logo/icon-96x96.png';
+import { ThemeToggle } from './ThemeToggle';
 
 interface LandingViewProps {
   onSelectHost: () => void;
@@ -32,6 +33,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
       <header className="landing-site-header">
         <div className="landing-site-header-inner">
           <p className="landing-brand">Karaoke Go</p>
+          <ThemeToggle />
         </div>
       </header>
 

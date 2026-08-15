@@ -5,6 +5,7 @@ import type { Song } from '../types';
 import { SearchModal } from './SearchModal';
 import { PartyEndedView } from './PartyEndedView';
 import { Wave } from './ui/wave';
+import { ThemeToggle } from './ThemeToggle';
 
 interface ParticipantViewProps {
   roomCode: string;
@@ -102,9 +103,12 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
             {userName} (Remote Controller)
           </div>
         </div>
-        <button onClick={handleLeave} className="button-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}>
-          Leave
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <ThemeToggle />
+          <button onClick={handleLeave} className="button-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}>
+            Leave
+          </button>
+        </div>
       </div>
 
       {/* Now Playing Widget */}
@@ -117,7 +121,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
         </div>
 
         {currentSong ? (
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '0.75rem', background: 'rgba(18,18,18,0.65)', border: '1px solid rgba(176,141,87,0.22)', borderRadius: '14px' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '0.75rem', background: 'var(--input-bg)', border: '1px solid rgba(176,141,87,0.22)', borderRadius: '14px' }}>
             <img
               src={currentSong.thumbnail}
               alt={currentSong.title}
@@ -159,7 +163,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
       )}
 
       {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', background: 'rgba(18,18,18,0.7)', border: '1px solid rgba(176,141,87,0.22)', padding: '6px', borderRadius: '14px' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', background: 'var(--chip-bg)', border: '1px solid rgba(176,141,87,0.22)', padding: '6px', borderRadius: '14px' }}>
         <button
           onClick={() => setSelectedTab('search')}
           className={selectedTab === 'search' ? 'button-primary' : 'button-secondary'}
@@ -234,7 +238,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
                       alignItems: 'center',
                       gap: '0.75rem',
                       padding: '0.75rem',
-                      background: isCurrent ? 'rgba(122, 46, 58, 0.18)' : 'rgba(18, 18, 18, 0.65)',
+                      background: isCurrent ? 'rgba(122, 46, 58, 0.18)' : 'var(--list-bg)',
                       boxShadow: 'none',
                       borderRadius: '14px',
                       border: isCurrent ? '1px solid rgba(122, 46, 58, 0.65)' : '1px solid rgba(176, 141, 87, 0.22)'

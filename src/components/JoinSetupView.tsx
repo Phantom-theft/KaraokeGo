@@ -4,6 +4,7 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp';
 import brandLogo from '../assets/logo/icon-96x96.png';
+import { ThemeToggle } from './ThemeToggle';
 
 interface JoinSetupViewProps {
   onJoin: (roomCode: string, userId: string, userName: string) => void;
@@ -77,8 +78,9 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
           />
           <span className="setup-header-name">Karaoke Go</span>
         </div>
-        <div className="setup-header-spacer" />
-      </header>
+        <div className="setup-header-spacer">
+          <ThemeToggle />
+        </div>      </header>
 
       <main className="setup-shell">
         <div className="setup-two-col">

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Music2, Smartphone, Radio, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import brandLogo from '../assets/logo/icon-96x96.png';
+import { ThemeToggle } from './ThemeToggle';
 
 interface HostSetupViewProps {
   onHost: (roomCode: string, userId: string, userName: string) => void;
@@ -56,8 +57,9 @@ export const HostSetupView: React.FC<HostSetupViewProps> = ({ onHost, onBack }) 
           />
           <span className="setup-header-name">Karaoke Go</span>
         </div>
-        <div className="setup-header-spacer" />
-      </header>
+        <div className="setup-header-spacer">
+          <ThemeToggle />
+        </div>      </header>
 
       <main className="setup-shell">
         <div className="setup-two-col">

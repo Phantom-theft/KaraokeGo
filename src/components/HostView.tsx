@@ -6,6 +6,7 @@ import { type SongSearchResult } from '../services/youtube';
 import type { Song, QueueItem } from '../types';
 import { SearchModal } from './SearchModal';
 import { Wave } from './ui/wave';
+import { ThemeToggle } from './ThemeToggle';
 
 // The YouTube IFrame Player API attaches itself to window at runtime.
 declare global {
@@ -556,7 +557,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               <div style={{
                 position: 'absolute', inset: 0, zIndex: 8,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#121212',
+                background: 'var(--bg-stage)',
               }}>
                 <Wave className="size-10" />
               </div>
@@ -567,7 +568,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 position: 'absolute', inset: 0, zIndex: 10,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                background: '#121212',
+                background: 'var(--bg-stage)',
                 textAlign: 'center', padding: '2rem',
               }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚫</div>
@@ -596,7 +597,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 color: 'var(--text-secondary)',
-                background: 'radial-gradient(ellipse at center, #1a1a1a 0%, #121212 100%)',
+                background: 'radial-gradient(ellipse at center, var(--bg-card) 0%, var(--bg-stage) 100%)',
                 animation: 'hostFadeIn 0.3s ease-out',
               }}>
                 <div style={{
@@ -765,7 +766,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                       }}
                     >
                       {/* 16:9 Thumbnail */}
-                      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: '#000', overflow: 'hidden' }}>
+                      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: 'var(--bg-inset)', overflow: 'hidden' }}>
                         <img
                           src={song.thumbnail}
                           alt={song.title}
@@ -811,8 +812,11 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
 
           {/* ── 3. PLAYBACK CONTROLS Panel + INLINE VISIBLE QR CODE & EXIT ── */}
           <div className="host-panel host-panel--controls">
-            <div style={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--accent)' }}>
-              Playback & Controls
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--accent)' }}>
+                Playback & Controls
+              </div>
+              <ThemeToggle />
             </div>
 
             {/* Progress bar */}
