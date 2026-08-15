@@ -908,6 +908,15 @@ button {
   flex-shrink: 0;
 }
 
+.landing-footer-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+
 .landing-footer-name {
   margin: 0;
   font-family: var(--font-heading);
@@ -1758,6 +1767,15 @@ button {
   border: 1px solid rgba(176, 141, 87, 0.28);
 }
 
+.setup-header-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+
 .setup-header-name {
   font-family: var(--font-heading);
   font-weight: 700;
@@ -1818,6 +1836,21 @@ button {
   color: var(--accent);
   background: rgba(176, 141, 87, 0.12);
   border: 1px solid rgba(176, 141, 87, 0.3);
+}
+
+.setup-form-icon--logo {
+  padding: 0;
+  background: transparent;
+  border: none;
+  overflow: hidden;
+}
+
+.setup-form-icon--logo img {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  object-fit: cover;
+  display: block;
 }
 
 .setup-form-title {

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Mic2, Music2, Smartphone, Search, ListMusic, Trash2, Radio } from 'lucide-react';
+import { ArrowLeft, Music2, Smartphone, Search, ListMusic, Trash2, Radio } from 'lucide-react';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp';
+import brandLogo from '../assets/logo/icon-96x96.png';
 
 interface JoinSetupViewProps {
   onJoin: (roomCode: string, userId: string, userName: string) => void;
@@ -66,9 +67,14 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
           Back
         </button>
         <div className="setup-header-brand">
-          <span className="setup-header-icon" aria-hidden="true">
-            <Mic2 size={18} strokeWidth={2.4} />
-          </span>
+          <img
+            src={brandLogo}
+            alt=""
+            width={32}
+            height={32}
+            className="setup-header-logo"
+            aria-hidden="true"
+          />
           <span className="setup-header-name">Karaoke Go</span>
         </div>
         <div className="setup-header-spacer" />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Mic2, Music2, Smartphone, Radio, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { ArrowLeft, Music2, Smartphone, Radio, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
+import brandLogo from '../assets/logo/icon-96x96.png';
 
 interface HostSetupViewProps {
   onHost: (roomCode: string, userId: string, userName: string) => void;
@@ -45,9 +46,14 @@ export const HostSetupView: React.FC<HostSetupViewProps> = ({ onHost, onBack }) 
           Back
         </button>
         <div className="setup-header-brand">
-          <span className="setup-header-icon" aria-hidden="true">
-            <Mic2 size={18} strokeWidth={2.4} />
-          </span>
+          <img
+            src={brandLogo}
+            alt=""
+            width={32}
+            height={32}
+            className="setup-header-logo"
+            aria-hidden="true"
+          />
           <span className="setup-header-name">Karaoke Go</span>
         </div>
         <div className="setup-header-spacer" />
@@ -56,8 +62,8 @@ export const HostSetupView: React.FC<HostSetupViewProps> = ({ onHost, onBack }) 
       <main className="setup-shell">
         <div className="setup-two-col">
           <div className="setup-form-panel">
-            <div className="setup-form-icon" aria-hidden="true">
-              <Mic2 size={28} strokeWidth={2.2} />
+            <div className="setup-form-icon setup-form-icon--logo" aria-hidden="true">
+              <img src={brandLogo} alt="" width={52} height={52} />
             </div>
             <h1 className="setup-form-title">Start Your Party</h1>
             <p className="setup-form-subtitle">

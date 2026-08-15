@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import phonePreview from '../assets/img/img1.png';
 import laptopPreview from '../assets/img/laptop_img.png';
 import tvPreview from '../assets/img/tv_img.png';
+import brandLogo from '../assets/logo/icon-96x96.png';
 
 interface LandingViewProps {
   onSelectHost: () => void;
@@ -151,9 +152,14 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
       <footer className="landing-footer">
         <div className="landing-footer-inner landing-footer-inner--simple">
           <div className="landing-footer-brand">
-            <span className="landing-footer-mark" aria-hidden="true">
-              <Mic2 size={16} strokeWidth={2.4} />
-            </span>
+            <img
+              src={brandLogo}
+              alt=""
+              width={36}
+              height={36}
+              className="landing-footer-logo"
+              aria-hidden="true"
+            />
             <div>
               <p className="landing-footer-name">Karaoke Go</p>
               <p className="landing-footer-tag">Host the stage. Guests run the queue.</p>
