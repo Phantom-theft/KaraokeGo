@@ -36,6 +36,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const [showQrModal, setShowQrModal] = useState(false);
   const [hostAddedSongId, setHostAddedSongId] = useState<string | null>(null);
   const [isExiting, setIsExiting] = useState(false);
+  const [exitError, setExitError] = useState<string | null>(null);
   const [suggestedSongs, setSuggestedSongs] = useState<SongSearchResult[]>(HOST_SUGGESTED_SONGS);
 
   useEffect(() => {
@@ -46,17 +47,20 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
     return () => { cancelled = true; };
   }, []);
 
-  const handleExitStage = useCallback(() => {
+  const handleExitStage = useCallback(async () => {
     if (!onLeave || isExiting) return;
     setIsExiting(true);
-    window.setTimeout(async () => {
-      try {
-        await endRoom();
-      } catch (err) {
-        console.error('[Host] Failed to end room:', err);
-      }
+    setExitError(null);
+    try {
+      // Wait until Firebase confirms the room ended — only then go home,
+      // so the session never stays "active" after the host leaves.
+      await endRoom();
       onLeave();
-    }, 380);
+    } catch (err) {
+      console.error('[Host] Failed to end room:', err);
+      setExitError('Could not end the room. Check your connection and try again.');
+      setIsExiting(false);
+    }
   }, [onLeave, isExiting, endRoom]);
 
   // playerContainerRef is kept for direct/imperative access (e.g. inside
@@ -885,14 +889,21 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                   {roomCode}
                 </div>
                 {onLeave && (
-                  <button
-                    onClick={handleExitStage}
-                    disabled={isExiting}
-                    className="button-secondary host-icon-btn"
-                    style={{ padding: '0.35rem 0.75rem', fontSize: '0.76rem', width: '100%', marginTop: '0.15rem' }}
-                  >
-                    Exit Stage
-                  </button>
+                  <>
+                    <button
+                      onClick={handleExitStage}
+                      disabled={isExiting}
+                      className="button-secondary host-icon-btn"
+                      style={{ padding: '0.35rem 0.75rem', fontSize: '0.76rem', width: '100%', marginTop: '0.15rem' }}
+                    >
+                      {isExiting ? 'Ending…' : 'Exit Stage'}
+                    </button>
+                    {exitError && (
+                      <div style={{ fontSize: '0.7rem', color: '#e07070', fontWeight: 600, marginTop: '0.2rem', lineHeight: 1.3 }}>
+                        {exitError}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
