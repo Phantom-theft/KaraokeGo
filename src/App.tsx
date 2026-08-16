@@ -4,6 +4,8 @@ import { HostSetupView } from './components/HostSetupView';
 import { JoinSetupView } from './components/JoinSetupView';
 import { HostView } from './components/HostView';
 import { ParticipantView } from './components/ParticipantView';
+import { OfflineView } from './components/OfflineView';
+import { useOnlineStatus } from './hooks/useOnlineStatus';
 import './App.css';
 
 type AppView = 'landing' | 'host-setup' | 'join-setup' | 'host' | 'participant';
@@ -50,6 +52,7 @@ function clearSession() {
 }
 
 function App() {
+  const { isOnline, checking, refresh } = useOnlineStatus();
   const saved = loadSession();
   const initialRoomParam =
     typeof window !== 'undefined'
@@ -102,6 +105,14 @@ function App() {
   const goBackToLanding = () => {
     setView('landing');
   };
+
+  if (!isOnline) {
+    return (
+      <div className="app">
+        <OfflineView checking={checking} onRetry={() => void refresh()} />
+      </div>
+    );
+  }
 
   return (
     <div className="app">
