@@ -259,12 +259,6 @@ html {
     color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
-
 body {
   margin: 0;
   padding: 0;
@@ -908,6 +902,7 @@ button {
   filter: blur(34px);
   z-index: 0;
   pointer-events: none;
+  animation: landingGlowReveal 0.9s ease-out 0.05s both;
 }
 
 .landing-device-wrap {
@@ -929,6 +924,47 @@ button {
   width: 58%;
   max-width: var(--device-laptop-size);
   transform: rotate(5deg);
+}
+
+@keyframes landingDeviceReveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.1rem) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes landingGlowReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.landing-device-wrap--tv .landing-device-frame {
+  animation: landingDeviceReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.landing-phone-stage {
+  animation: landingDeviceReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+}
+
+.landing-device-wrap--laptop .landing-device-frame {
+  animation: landingDeviceReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.34s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-phone-glow,
+  .landing-device-wrap--tv .landing-device-frame,
+  .landing-phone-stage,
+  .landing-device-wrap--laptop .landing-device-frame {
+    animation: none;
+  }
 }
 
 .landing-device-frame {

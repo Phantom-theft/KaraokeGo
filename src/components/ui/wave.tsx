@@ -19,7 +19,7 @@ function Wave({ className, ...props }: React.ComponentProps<"span">) {
       `}</style>
       <span
         role="status"
-        className={cn("inline-flex items-center gap-[2.5%] text-[var(--accent)]", className)}
+        className={cn("inline-flex items-center gap-[8%] text-[var(--accent)]", className)}
         {...props}
       >
         {WAVE_BAR_HEIGHTS.map((height, index) => (
