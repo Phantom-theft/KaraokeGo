@@ -12,10 +12,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
-        'favicon.png',
-        'favicon-32.png',
-        'favicon.svg',
-        'apple-touch-icon.png',
+        'logo/icon-96x96.png',
+        'logo/icon-180x180.png',
+        'logo/icon-192x192.png',
+        'logo/icon-512x512.png',
+        'logo/icon-maskable-512x512.png',
       ],
       manifest: {
         name: 'Karaoke Go',
@@ -30,19 +31,19 @@ export default defineConfig({
         categories: ['entertainment', 'music'],
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'logo/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'logo/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: 'pwa-maskable-512x512.png',
+            src: 'logo/icon-maskable-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
