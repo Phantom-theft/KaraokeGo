@@ -7,6 +7,7 @@ import tvPreview from '../../assets/img/tv_img.png';
 import brandLogo from '../../assets/logo/icon-96x96.png';
 import { ThemeToggle } from '../ThemeToggle';
 import { InfoModal, type InfoModalTab } from '../modals/InfoModal';
+import { PwaInstallButton } from '../PwaInstallButton';
 
 interface LandingViewProps {
   onSelectHost: () => void;
@@ -108,6 +109,8 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
                   </span>
                 </button>
               </div>
+
+              <PwaInstallButton disabled={!!exitingTo} />
             </div>
           </div>
 

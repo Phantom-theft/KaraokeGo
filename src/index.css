@@ -1293,6 +1293,160 @@ button {
   font-weight: 500;
 }
 
+.landing-install-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(176, 141, 87, 0.22);
+}
+
+.landing-install-kicker {
+  margin: 0 0 0.65rem 0;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.landing-install-btn {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.65rem, 2vw, 0.85rem);
+  width: 100%;
+  text-align: left;
+  border: 1px dashed rgba(176, 141, 87, 0.45);
+  background: rgba(176, 141, 87, 0.08);
+  color: var(--text);
+  border-radius: 14px;
+  padding: clamp(0.75rem, 2vh, 0.9rem) clamp(0.85rem, 2vw, 1rem);
+  cursor: pointer;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.landing-install-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(176, 141, 87, 0.65);
+  background: rgba(122, 46, 58, 0.14);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.landing-install-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.landing-install-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.landing-install-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(2.25rem, 6vw, 2.625rem);
+  height: clamp(2.25rem, 6vw, 2.625rem);
+  border-radius: 12px;
+  color: var(--accent);
+  background: rgba(176, 141, 87, 0.14);
+  border: 1px solid rgba(176, 141, 87, 0.32);
+  flex-shrink: 0;
+}
+
+.landing-install-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.landing-install-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.landing-install-desc {
+  font-size: clamp(0.78rem, 1vw + 0.25rem, 0.82rem);
+  opacity: 0.72;
+  font-weight: 500;
+}
+
+.landing-install-installed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(176, 141, 87, 0.22);
+  color: #22c55e;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.landing-pwa-modal {
+  max-width: min(92vw, 26rem);
+}
+
+.landing-pwa-modal-body {
+  padding-top: 0.25rem;
+}
+
+.landing-pwa-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.landing-pwa-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.landing-pwa-steps strong {
+  color: var(--text-primary);
+}
+
+.landing-pwa-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  flex-shrink: 0;
+  color: var(--accent);
+  background: rgba(176, 141, 87, 0.12);
+  border: 1px solid rgba(176, 141, 87, 0.28);
+}
+
+.landing-pwa-step-icon--plus,
+.landing-pwa-step-icon--check {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.landing-pwa-note {
+  margin: 1rem 0 0;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(176, 141, 87, 0.1);
+  border: 1px solid rgba(176, 141, 87, 0.22);
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
 /* Tablet / ~1024px — stacked layout, centered content, tighter device cluster */
 @container landing-shell (min-width: 40rem) and (max-width: 67.99rem) {
   .landing-hero-left {
