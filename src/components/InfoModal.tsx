@@ -121,9 +121,7 @@ function ModalPortal({ children }: { children: React.ReactNode }) {
 export const HelpModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  onOpenReport?: () => void;
-  onOpenFeedback?: () => void;
-}> = ({ isOpen, onClose, onOpenReport, onOpenFeedback }) => {
+}> = ({ isOpen, onClose }) => {
   const [faqSearch, setFaqSearch] = useState('');
   const [faqCategory, setFaqCategory] = useState('All');
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(0);
@@ -901,21 +899,13 @@ export const InfoModal: React.FC<{
   initialTab?: InfoModalType;
   roomCode?: string | null;
   onClose: () => void;
-  onOpenReport?: () => void;
   onOpenFeedback?: () => void;
-}> = ({ isOpen, initialTab = 'help', roomCode, onClose, onOpenReport, onOpenFeedback }) => {
+}> = ({ isOpen, initialTab = 'help', roomCode, onClose, onOpenFeedback }) => {
   if (!isOpen) return null;
 
   switch (initialTab) {
     case 'help':
-      return (
-        <HelpModal
-          isOpen={isOpen}
-          onClose={onClose}
-          onOpenReport={onOpenReport}
-          onOpenFeedback={onOpenFeedback}
-        />
-      );
+      return <HelpModal isOpen={isOpen} onClose={onClose} />;
     case 'updates':
       return <UpdatesModal isOpen={isOpen} onClose={onClose} />;
     case 'report':
@@ -927,14 +917,7 @@ export const InfoModal: React.FC<{
     case 'privacy':
       return <PrivacyModal isOpen={isOpen} onClose={onClose} onOpenFeedback={onOpenFeedback} />;
     default:
-      return (
-        <HelpModal
-          isOpen={isOpen}
-          onClose={onClose}
-          onOpenReport={onOpenReport}
-          onOpenFeedback={onOpenFeedback}
-        />
-      );
+      return <HelpModal isOpen={isOpen} onClose={onClose} />;
   }
 };
 

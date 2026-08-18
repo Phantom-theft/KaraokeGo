@@ -245,7 +245,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
         isOpen={infoModalOpen}
         initialTab={infoModalTab}
         onClose={() => setInfoModalOpen(false)}
-        onOpenReport={() => openInfoModal('report')}
         onOpenFeedback={() => openInfoModal('feedback')}
       />
     </div>
