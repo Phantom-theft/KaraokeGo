@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Mic2, Smartphone } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import phonePreview from '../assets/img/img1.png';
-import laptopPreview from '../assets/img/laptop_img.png';
-import tvPreview from '../assets/img/tv_img.png';
-import brandLogo from '../assets/logo/icon-96x96.png';
-import { ThemeToggle } from './ThemeToggle';
-import { InfoModal, type InfoModalTab } from './InfoModal';
+import phonePreview from '../../assets/img/img1.png';
+import laptopPreview from '../../assets/img/laptop_img.png';
+import tvPreview from '../../assets/img/tv_img.png';
+import brandLogo from '../../assets/logo/icon-96x96.png';
+import { ThemeToggle } from '../ThemeToggle';
+import { InfoModal, type InfoModalTab } from '../modals/InfoModal';
 
 interface LandingViewProps {
   onSelectHost: () => void;

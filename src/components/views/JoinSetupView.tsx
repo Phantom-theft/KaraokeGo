@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Music2, Smartphone, Search, ListMusic, Trash2, Radio } from 'lucide-react';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
-import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp';
-import brandLogo from '../assets/logo/icon-96x96.png';
-import { ThemeToggle } from './ThemeToggle';
+import { useRealtimeRoom } from '../../hooks/useRealtimeRoom';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '../ui/input-otp';
+import brandLogo from '../../assets/logo/icon-96x96.png';
+import { ThemeToggle } from '../ThemeToggle';
 
 interface JoinSetupViewProps {
   onJoin: (roomCode: string, userId: string, userName: string) => void;

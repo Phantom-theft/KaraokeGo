@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
-import { type SongSearchResult } from '../services/youtube';
-import type { Song } from '../types';
-import { SearchModal } from './SearchModal';
+import { useRealtimeRoom } from '../../hooks/useRealtimeRoom';
+import { type SongSearchResult } from '../../services/youtube';
+import type { Song } from '../../types';
+import { SearchModal } from '../modals/SearchModal';
 import { PartyEndedView } from './PartyEndedView';
-import { Wave } from './ui/wave';
-import { ThemeToggle } from './ThemeToggle';
+import { Wave } from '../ui/wave';
+import { ThemeToggle } from '../ThemeToggle';
 
 interface ParticipantViewProps {
   roomCode: string;

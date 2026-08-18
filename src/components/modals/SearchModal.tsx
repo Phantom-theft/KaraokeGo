@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { searchKaraokeTracks, filterEmbeddableSongs, type SongSearchResult } from '../services/youtube';
-import { Wave } from './ui/wave';
+import { searchKaraokeTracks, filterEmbeddableSongs, type SongSearchResult } from '../../services/youtube';
+import { Wave } from '../ui/wave';
 
 interface SearchModalProps {
   isOpen: boolean;

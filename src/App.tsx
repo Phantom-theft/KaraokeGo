@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { LandingView } from './components/LandingView';
-import { HostSetupView } from './components/HostSetupView';
-import { JoinSetupView } from './components/JoinSetupView';
-import { HostView } from './components/HostView';
-import { ParticipantView } from './components/ParticipantView';
-import { OfflineView } from './components/OfflineView';
+import { LandingView } from './components/views/LandingView';
+import { HostSetupView } from './components/views/HostSetupView';
+import { JoinSetupView } from './components/views/JoinSetupView';
+import { HostView } from './components/views/HostView';
+import { ParticipantView } from './components/views/ParticipantView';
+import { OfflineView } from './components/views/OfflineView';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import './App.css';
 

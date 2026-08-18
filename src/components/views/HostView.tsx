@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Maximize2, Minimize2, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
-import { type SongSearchResult, filterEmbeddableSongs } from '../services/youtube';
-import type { Song, QueueItem } from '../types';
-import { SearchModal } from './SearchModal';
-import { Wave } from './ui/wave';
-import { ThemeToggle } from './ThemeToggle';
+import { useRealtimeRoom } from '../../hooks/useRealtimeRoom';
+import { type SongSearchResult, filterEmbeddableSongs } from '../../services/youtube';
+import type { Song, QueueItem } from '../../types';
+import { SearchModal } from '../modals/SearchModal';
+import { Wave } from '../ui/wave';
+import { ThemeToggle } from '../ThemeToggle';
 
 // The YouTube IFrame Player API attaches itself to window at runtime.
 declare global {

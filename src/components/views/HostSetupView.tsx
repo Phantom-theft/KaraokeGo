@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Music2, Smartphone, Radio, SlidersHorizontal, Sparkles } from 'lucide-react';
-import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
-import brandLogo from '../assets/logo/icon-96x96.png';
-import { ThemeToggle } from './ThemeToggle';
+import { useRealtimeRoom } from '../../hooks/useRealtimeRoom';
+import brandLogo from '../../assets/logo/icon-96x96.png';
+import { ThemeToggle } from '../ThemeToggle';
 
 interface HostSetupViewProps {
   onHost: (roomCode: string, userId: string, userName: string) => void;
