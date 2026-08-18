@@ -32,7 +32,7 @@ export async function sendContactMessage(payload: ContactPayload): Promise<void>
       severity: payload.severity || null,
       createdAt: serverTimestamp(),
       userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
-      appVersion: '1.3.0',
+      appVersion: __APP_VERSION__,
     });
   } catch (error: any) {
     console.error(`[FeedbackService] Error submitting ${payload.kind}:`, error);

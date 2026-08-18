@@ -3,9 +3,17 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
+import fs from 'node:fs'
+
+const packageJson = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf-8'))
+const appVersion = packageJson.version || '1.0.0'
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(appVersion),
+    'import.meta.env.PACKAGE_VERSION': JSON.stringify(appVersion),
+  },
   plugins: [
     react(),
     tailwindcss(),
