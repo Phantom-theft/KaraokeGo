@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Music2, Smartphone, Search, ListMusic, Trash2, Radio, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Music2, Smartphone, Search, ListMusic, Trash2, Radio } from 'lucide-react';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp';
 import brandLogo from '../assets/logo/icon-96x96.png';
 import { ThemeToggle } from './ThemeToggle';
-import { InfoModal, type InfoModalTab } from './InfoModal';
 
 interface JoinSetupViewProps {
   onJoin: (roomCode: string, userId: string, userName: string) => void;
@@ -19,8 +18,6 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
   const [loadingAction, setLoadingAction] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [isExiting, setIsExiting] = useState(false);
-  const [infoModalOpen, setInfoModalOpen] = useState(false);
-  const [infoModalTab, setInfoModalTab] = useState<InfoModalTab>('help');
   const { joinRoom } = useRealtimeRoom(null, null);
 
   const handleBack = () => {
@@ -81,27 +78,7 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
           />
           <span className="setup-header-name">Karaoke Go</span>
         </div>
-        <div className="setup-header-spacer" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <button
-            type="button"
-            onClick={() => {
-              setInfoModalTab('help');
-              setInfoModalOpen(true);
-            }}
-            className="button-secondary"
-            style={{
-              padding: '0.3rem 0.55rem',
-              fontSize: '0.76rem',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-            }}
-            title="Help, Report Issue & Feedback"
-          >
-            <HelpCircle size={14} />
-            <span>Help</span>
-          </button>
+        <div className="setup-header-spacer">
           <ThemeToggle />
         </div>
       </header>
@@ -189,20 +166,6 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
           </div>
         </div>
       </main>
-
-      <InfoModal
-        isOpen={infoModalOpen}
-        initialTab={infoModalTab}
-        onClose={() => setInfoModalOpen(false)}
-        onOpenReport={() => {
-          setInfoModalTab('report');
-          setInfoModalOpen(true);
-        }}
-        onOpenFeedback={() => {
-          setInfoModalTab('feedback');
-          setInfoModalOpen(true);
-        }}
-      />
     </div>
   );
 };
