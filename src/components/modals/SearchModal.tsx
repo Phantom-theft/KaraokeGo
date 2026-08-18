@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { searchKaraokeTracks, filterEmbeddableSongs, type SongSearchResult } from '../../services/youtube';
 import { Wave } from '../ui/wave';
 
@@ -72,6 +73,50 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const [isSearching, setIsSearching] = useState(false);
   const [addedSongId, setAddedSongId] = useState<string | null>(null);
 
+  const resultsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Background scroll lock & viewport restoration
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Reset results scroll position to top when modal opens
+    if (resultsContainerRef.current) {
+      resultsContainerRef.current.scrollTop = 0;
+    }
+
+    // Capture the current scroll position before locking
+    const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
+    // Save previous styles
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverscroll = document.documentElement.style.overscrollBehavior;
+    const prevBodyOverscroll = document.body.style.overscrollBehavior;
+
+    // Lock document background scrolling cleanly
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overscrollBehavior = 'none';
+    document.body.style.overscrollBehavior = 'none';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      // Restore previous document styles
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overscrollBehavior = prevHtmlOverscroll;
+      document.body.style.overscrollBehavior = prevBodyOverscroll;
+
+      // Restore exact scroll position
+      window.scrollTo({ top: scrollY, behavior: 'instant' as ScrollBehavior });
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   // Drop popular suggestions that disallow embedding
   useEffect(() => {
     if (!isOpen) return;
@@ -82,8 +127,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     return () => { cancelled = true; };
   }, [isOpen]);
 
-  // Debounced search effect
+  // Debounced search effect & scroll reset
   useEffect(() => {
+    if (resultsContainerRef.current) {
+      resultsContainerRef.current.scrollTop = 0;
+    }
+
     if (!searchQuery.trim()) {
       setSearchResults([]);
       return;
@@ -118,11 +167,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
   const displayList = searchQuery.trim() ? searchResults : popularSongs;
 
-  return (
+  return createPortal(
     <div
       className="search-modal-backdrop"
       onClick={onClose}
@@ -199,7 +248,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Scrollable Results / Suggestions Area */}
-        <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.35rem' }}>
+        <div ref={resultsContainerRef} className="search-modal-results">
           {isSearching && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 0', gap: '1rem' }}>
               <Wave className="size-10" />
@@ -323,6 +372,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

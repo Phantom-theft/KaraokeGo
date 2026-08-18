@@ -2656,6 +2656,11 @@ html[data-theme="light"] body::before {
 .search-modal-backdrop {
   position: fixed;
   inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -2663,9 +2668,10 @@ html[data-theme="light"] body::before {
   background: var(--overlay-scrim);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding: clamp(0.75rem, 3vw, 1.25rem);
+  padding: clamp(0.6rem, 2.5vw, 1.25rem);
   animation: hostFadeIn 0.25s ease-out;
   box-sizing: border-box;
+  overscroll-behavior: contain;
 }
 
 .search-modal-box {
@@ -2681,9 +2687,35 @@ html[data-theme="light"] body::before {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: clamp(1rem, 3vw, 1.75rem) clamp(1rem, 3.5vw, 2rem);
+  padding: clamp(1rem, 3vw, 1.75rem) clamp(0.85rem, 3.5vw, 2rem);
   position: relative;
   box-sizing: border-box;
+  overscroll-behavior: contain;
+}
+
+.search-modal-results {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding-right: 0.35rem;
+}
+
+@media (max-width: 640px) {
+  .search-modal-backdrop {
+    padding: clamp(0.35rem, 1.5vw, 0.65rem);
+  }
+  .search-modal-box {
+    height: min(94dvh, calc(100dvh - 0.75rem));
+    max-height: calc(100dvh - 0.75rem);
+    padding: 1rem 0.75rem;
+    border-radius: 1.25rem;
+  }
+  .search-modal-results {
+    padding-right: 0.2rem;
+  }
 }
 
 .song-grid-container {
