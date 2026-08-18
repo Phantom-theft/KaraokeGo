@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Music2, Smartphone, Radio, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { ArrowLeft, Music2, Smartphone, Radio, SlidersHorizontal, Sparkles, HelpCircle } from 'lucide-react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import brandLogo from '../assets/logo/icon-96x96.png';
 import { ThemeToggle } from './ThemeToggle';
+import { InfoModal, type InfoModalTab } from './InfoModal';
 
 interface HostSetupViewProps {
   onHost: (roomCode: string, userId: string, userName: string) => void;
@@ -14,6 +14,8 @@ export const HostSetupView: React.FC<HostSetupViewProps> = ({ onHost, onBack }) 
   const [loadingAction, setLoadingAction] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [isExiting, setIsExiting] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [infoModalTab, setInfoModalTab] = useState<InfoModalTab>('help');
   const { createRoom } = useRealtimeRoom(null, null);
 
   const handleBack = () => {
@@ -57,9 +59,30 @@ export const HostSetupView: React.FC<HostSetupViewProps> = ({ onHost, onBack }) 
           />
           <span className="setup-header-name">Karaoke Go</span>
         </div>
-        <div className="setup-header-spacer">
+        <div className="setup-header-spacer" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <button
+            type="button"
+            onClick={() => {
+              setInfoModalTab('help');
+              setInfoModalOpen(true);
+            }}
+            className="button-secondary"
+            style={{
+              padding: '0.3rem 0.55rem',
+              fontSize: '0.76rem',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+            }}
+            title="Help, Report Issue & Feedback"
+          >
+            <HelpCircle size={14} />
+            <span>Help</span>
+          </button>
           <ThemeToggle />
-        </div>      </header>
+        </div>
+      </header>
 
       <main className="setup-shell">
         <div className="setup-two-col">
@@ -133,6 +156,20 @@ export const HostSetupView: React.FC<HostSetupViewProps> = ({ onHost, onBack }) 
           </div>
         </div>
       </main>
+
+      <InfoModal
+        isOpen={infoModalOpen}
+        initialTab={infoModalTab}
+        onClose={() => setInfoModalOpen(false)}
+        onOpenReport={() => {
+          setInfoModalTab('report');
+          setInfoModalOpen(true);
+        }}
+        onOpenFeedback={() => {
+          setInfoModalTab('feedback');
+          setInfoModalOpen(true);
+        }}
+      />
     </div>
   );
 };

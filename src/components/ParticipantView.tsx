@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { HelpCircle } from 'lucide-react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { type SongSearchResult } from '../services/youtube';
 import type { Song } from '../types';
 import { SearchModal } from './SearchModal';
+import { InfoModal, type InfoModalTab } from './InfoModal';
 import { PartyEndedView } from './PartyEndedView';
 import { Wave } from './ui/wave';
 import { ThemeToggle } from './ThemeToggle';
@@ -24,6 +26,8 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
   const [selectedTab, setSelectedTab] = useState<'search' | 'queue'>('search');
   const [addSuccessMessage, setAddSuccessMessage] = useState<string | null>(null);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [infoModalTab, setInfoModalTab] = useState<InfoModalTab>('help');
 
   const handleLeave = useCallback(async () => {
     try {
@@ -103,7 +107,27 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
             {userName} (Remote Controller)
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <button
+            type="button"
+            onClick={() => {
+              setInfoModalTab('help');
+              setInfoModalOpen(true);
+            }}
+            className="button-secondary"
+            style={{
+              padding: '0.35rem 0.55rem',
+              fontSize: '0.78rem',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+            }}
+            title="Help, Report Issue & Feedback"
+          >
+            <HelpCircle size={14} />
+            <span>Help</span>
+          </button>
           <ThemeToggle />
           <button onClick={handleLeave} className="button-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}>
             Leave
@@ -276,6 +300,22 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
         onAddSong={handleAddSong}
+      />
+
+      {/* Info, Support & Feedback Modal */}
+      <InfoModal
+        isOpen={infoModalOpen}
+        initialTab={infoModalTab}
+        roomCode={roomCode}
+        onClose={() => setInfoModalOpen(false)}
+        onOpenReport={() => {
+          setInfoModalTab('report');
+          setInfoModalOpen(true);
+        }}
+        onOpenFeedback={() => {
+          setInfoModalTab('feedback');
+          setInfoModalOpen(true);
+        }}
       />
     </div>
   );

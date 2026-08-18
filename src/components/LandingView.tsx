@@ -6,6 +6,7 @@ import laptopPreview from '../assets/img/laptop_img.png';
 import tvPreview from '../assets/img/tv_img.png';
 import brandLogo from '../assets/logo/icon-96x96.png';
 import { ThemeToggle } from './ThemeToggle';
+import { InfoModal, type InfoModalTab } from './InfoModal';
 
 interface LandingViewProps {
   onSelectHost: () => void;
@@ -14,6 +15,9 @@ interface LandingViewProps {
 
 export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelectJoin }) => {
   const [exitingTo, setExitingTo] = useState<'host' | 'join' | null>(null);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [infoModalTab, setInfoModalTab] = useState<InfoModalTab>('help');
+
   const previewJoinUrl =
     typeof window !== 'undefined'
       ? `${window.location.origin}${window.location.pathname}`
@@ -28,11 +32,27 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
     }, 380);
   };
 
+  const openInfoModal = (tab: InfoModalTab) => {
+    setInfoModalTab(tab);
+    setInfoModalOpen(true);
+  };
+
   return (
     <div className={`landing-page ${exitingTo ? 'is-exiting' : ''}`}>
       <header className="landing-site-header">
         <div className="landing-site-header-inner">
-          <p className="landing-brand">Karaoke Go</p>
+          <div className="landing-header-brand-wrap">
+            <img
+              src={brandLogo}
+              alt=""
+              width={28}
+              height={28}
+              className="landing-header-logo"
+              aria-hidden="true"
+            />
+            <p className="landing-brand">Karaoke Go</p>
+          </div>
+
           <ThemeToggle />
         </div>
       </header>
@@ -92,11 +112,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
           </div>
 
           <div className="landing-hero-visual">
-            <div className="landing-device-cluster"
-            
-            
-            
-            >
+            <div className="landing-device-cluster">
               <div className="landing-phone-glow" aria-hidden="true" />
 
               <div className="landing-device-wrap landing-device-wrap--tv">
@@ -152,7 +168,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
       </main>
 
       <footer className="landing-footer">
-        <div className="landing-footer-inner landing-footer-inner--simple">
+        <div className="landing-footer-inner landing-footer-inner--clean">
           <div className="landing-footer-brand">
             <img
               src={brandLogo}
@@ -168,11 +184,70 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
             </div>
           </div>
 
+          <div className="landing-footer-links-row">
+            <button
+              type="button"
+              className="landing-footer-link-btn"
+              onClick={() => openInfoModal('terms')}
+            >
+              Terms
+            </button>
+            <span className="landing-footer-bullet" aria-hidden="true">•</span>
+            <button
+              type="button"
+              className="landing-footer-link-btn"
+              onClick={() => openInfoModal('privacy')}
+            >
+              Privacy
+            </button>
+            <span className="landing-footer-bullet" aria-hidden="true">•</span>
+            <button
+              type="button"
+              className="landing-footer-link-btn"
+              onClick={() => openInfoModal('help')}
+            >
+              Help & FAQ
+            </button>
+            <span className="landing-footer-bullet" aria-hidden="true">•</span>
+            <button
+              type="button"
+              className="landing-footer-link-btn"
+              onClick={() => openInfoModal('updates')}
+            >
+              Updates
+            </button>
+            <span className="landing-footer-bullet" aria-hidden="true">•</span>
+            <button
+              type="button"
+              className="landing-footer-link-btn"
+              onClick={() => openInfoModal('report')}
+            >
+              Report
+            </button>
+            <span className="landing-footer-bullet" aria-hidden="true">•</span>
+            <button
+              type="button"
+              className="landing-footer-link-btn"
+              onClick={() => openInfoModal('feedback')}
+            >
+              Feedback
+            </button>
+          </div>
+
           <p className="landing-footer-copy">
             © {new Date().getFullYear()} Karaoke Go
           </p>
         </div>
       </footer>
+
+      {/* Dedicated Modals for Terms, Privacy, Help & FAQ, Updates, Report, and Feedback */}
+      <InfoModal
+        isOpen={infoModalOpen}
+        initialTab={infoModalTab}
+        onClose={() => setInfoModalOpen(false)}
+        onOpenReport={() => openInfoModal('report')}
+        onOpenFeedback={() => openInfoModal('feedback')}
+      />
     </div>
   );
 };

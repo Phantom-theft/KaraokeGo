@@ -3,21 +3,39 @@ import { db } from './firebase';
 
 export type ContactKind = 'report' | 'feedback';
 
-export async function sendContactMessage(payload: {
+export interface ContactPayload {
   kind: ContactKind;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   message: string;
-}): Promise<void> {
-  const message = payload.message.trim();
-  if (!message) throw new Error('Please enter a message.');
+  category?: string;
+  roomCode?: string;
+  rating?: number;
+  severity?: string;
+}
 
-  await addDoc(collection(db, 'feedback'), {
-    kind: payload.kind,
-    name: payload.name.trim() || 'Anonymous',
-    email: payload.email.trim() || null,
-    message,
-    createdAt: serverTimestamp(),
-    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
-  });
+export async function sendContactMessage(payload: ContactPayload): Promise<void> {
+  const message = payload.message?.trim();
+  if (!message) {
+    throw new Error('Please enter a message before sending.');
+  }
+
+  try {
+    await addDoc(collection(db, 'feedback'), {
+      kind: payload.kind,
+      name: payload.name?.trim() || 'Anonymous',
+      email: payload.email?.trim() || null,
+      message,
+      category: payload.category || (payload.kind === 'report' ? 'General Issue' : 'General Feedback'),
+      roomCode: payload.roomCode?.trim().toUpperCase() || null,
+      rating: typeof payload.rating === 'number' ? payload.rating : null,
+      severity: payload.severity || null,
+      createdAt: serverTimestamp(),
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+      appVersion: '1.3.0',
+    });
+  } catch (error: any) {
+    console.error(`[FeedbackService] Error submitting ${payload.kind}:`, error);
+    throw new Error(error?.message || `Failed to send your ${payload.kind}. Please check your connection and try again.`);
+  }
 }

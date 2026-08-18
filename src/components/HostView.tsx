@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Maximize2, Minimize2, X } from 'lucide-react';
+import { Maximize2, Minimize2, X, HelpCircle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import { type SongSearchResult, filterEmbeddableSongs } from '../services/youtube';
 import type { Song, QueueItem } from '../types';
 import { SearchModal } from './SearchModal';
+import { InfoModal, type InfoModalTab } from './InfoModal';
 import { Wave } from './ui/wave';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -34,6 +35,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const { room, loading, error, endRoom, addToQueue, removeFromQueue, updatePlayback } = useRealtimeRoom(roomCode, userId);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [infoModalTab, setInfoModalTab] = useState<InfoModalTab>('help');
   const [hostAddedSongId, setHostAddedSongId] = useState<string | null>(null);
   const [isExiting, setIsExiting] = useState(false);
   const [exitError, setExitError] = useState<string | null>(null);
@@ -829,7 +832,29 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               <div style={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--accent)' }}>
                 Playback & Controls
               </div>
-              <ThemeToggle />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInfoModalTab('help');
+                    setInfoModalOpen(true);
+                  }}
+                  className="button-secondary"
+                  style={{
+                    padding: '0.28rem 0.55rem',
+                    fontSize: '0.74rem',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                  }}
+                  title="Help, Report Issue & Feedback"
+                >
+                  <HelpCircle size={14} />
+                  <span>Help</span>
+                </button>
+                <ThemeToggle />
+              </div>
             </div>
 
             {/* Progress bar */}
@@ -950,6 +975,22 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
         onAddSong={handleAddSong}
+      />
+
+      {/* Info, Support & Feedback Modal */}
+      <InfoModal
+        isOpen={infoModalOpen}
+        initialTab={infoModalTab}
+        roomCode={roomCode}
+        onClose={() => setInfoModalOpen(false)}
+        onOpenReport={() => {
+          setInfoModalTab('report');
+          setInfoModalOpen(true);
+        }}
+        onOpenFeedback={() => {
+          setInfoModalTab('feedback');
+          setInfoModalOpen(true);
+        }}
       />
     </div>
   );
