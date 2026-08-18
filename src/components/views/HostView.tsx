@@ -518,10 +518,14 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               ref={setPlayerContainerNode}
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             />
-            {/* Transparent overlay blocks clicks on the YouTube iframe so the
-                player only starts via our Play button, not by clicking the video. */}
+            {/* Blocks YouTube iframe clicks and toggles play/pause instead,
+                both in normal view and fullscreen. */}
             <div
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2 }}
+              style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2,
+                cursor: currentSong ? 'pointer' : 'default',
+              }}
+              onClick={currentSong ? handlePlayPause : undefined}
               aria-hidden="true"
             />
 
@@ -541,11 +545,9 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               </button>
             )}
 
-            {/* Click-to-start icon — small, not a full-screen blocker. The
-                player is only cued (paused) until this is clicked, so no
-                audio/video plays silently in the background beforehand.
-                This click is also the user gesture browsers require before
-                allowing unmuted playback. */}
+            {/* Click-to-start icon — only for the host's first unmute gesture.
+                After that, playback is controlled from the sidebar (or by
+                clicking the player itself when fullscreen). */}
             {currentSong && needsUnmute && countdown === null && (
               <button
                 onClick={handleStartPlayback}
