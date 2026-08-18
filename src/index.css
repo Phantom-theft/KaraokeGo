@@ -1525,11 +1525,7 @@ button {
 }
 
 .host-play-btn.is-paused {
-  background: #c43c3c;
-}
-
-.host-play-btn.is-paused:hover:not(:disabled) {
-  background: #ad3232;
+  background: #dc2626;
 }
 
 .host-play-btn:active:not(:disabled) {
@@ -2367,6 +2363,10 @@ html[data-theme="light"] .host-play-btn.is-playing {
 
 html[data-theme="light"] .host-play-btn.is-playing:hover:not(:disabled) {
   background: #278a56;
+}
+
+html[data-theme="light"] .host-play-btn.is-paused {
+  background: #dc2626;
 }
 
 html[data-theme="light"] .host-sidebar {
