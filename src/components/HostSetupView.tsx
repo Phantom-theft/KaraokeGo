@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { ArrowLeft, Music2, Smartphone, Radio, SlidersHorizontal, Sparkles, HelpCircle } from 'lucide-react';
 import { useRealtimeRoom } from '../hooks/useRealtimeRoom';
 import brandLogo from '../assets/logo/icon-96x96.png';
