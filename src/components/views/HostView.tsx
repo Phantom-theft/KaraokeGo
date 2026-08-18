@@ -222,6 +222,13 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const handlePlayPause = () => {
     if (!room) return;
 
+    // If we haven't had the first user gesture yet, delegate to handleStartPlayback
+    // so the player is unmuted before playback begins.
+    if (needsUnmuteRef.current) {
+      handleStartPlayback();
+      return;
+    }
+
     const currentlyPlaying = roomRef.current?.playback.status === 'playing'
       || room.playback.status === 'playing';
     const nextStatus = currentlyPlaying ? 'paused' : 'playing';
@@ -246,6 +253,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const [videoBlocked, setVideoBlocked] = useState(false);
   const [songEnded, setSongEnded] = useState(false);
   const [localCurrentTime, setLocalCurrentTime] = useState(0);
+  const [playerDuration, setPlayerDuration] = useState(0);
 
   const handleSkipNext = useCallback(() => {
     const currentRoom = roomRef.current;
@@ -436,6 +444,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
     setVideoBlocked(false);
     setSongEnded(false);
     setLocalCurrentTime(0);
+    setPlayerDuration(0);
 
     if (currentSong) {
       if (needsUnmuteRef.current) {
@@ -458,6 +467,8 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
       if (!player || typeof player.getCurrentTime !== 'function') return;
       const t = player.getCurrentTime();
       setLocalCurrentTime(t);
+      const d = typeof player.getDuration === 'function' ? player.getDuration() : 0;
+      if (d > 0) setPlayerDuration(d);
       tick += 1;
       if (tick % 5 === 0) {
         updatePlayback({ currentTime: Math.floor(t) });
@@ -491,7 +502,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   }
 
   const isPlaying = room.playback.status === 'playing';
-  const duration = currentSong?.duration || 240;
+  const duration = playerDuration || currentSong?.duration || 0;
   const progressPct = currentSong ? Math.min(100, (localCurrentTime / duration) * 100) : 0;
   const onlineCount = Object.values(room.participants).filter((p) => p.online !== false).length;
 
@@ -506,6 +517,12 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             <div
               ref={setPlayerContainerNode}
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            />
+            {/* Transparent overlay blocks clicks on the YouTube iframe so the
+                player only starts via our Play button, not by clicking the video. */}
+            <div
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2 }}
+              aria-hidden="true"
             />
 
             {currentSong && countdown === null && !videoBlocked && (
