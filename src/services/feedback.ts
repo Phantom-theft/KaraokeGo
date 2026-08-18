@@ -21,7 +21,8 @@ export async function sendContactMessage(payload: ContactPayload): Promise<void>
   }
 
   try {
-    await addDoc(collection(db, 'feedback'), {
+    const targetCollection = payload.kind === 'report' ? 'reports' : 'feedback';
+    await addDoc(collection(db, targetCollection), {
       kind: payload.kind,
       name: payload.name?.trim() || 'Anonymous',
       email: payload.email?.trim() || null,
