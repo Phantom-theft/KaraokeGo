@@ -860,7 +860,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
             <div className="host-controls-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <button
                 onClick={handlePlayPause}
-                className="button-primary host-icon-btn"
+                className={`host-icon-btn host-play-btn ${isPlaying ? 'is-playing' : 'is-paused'}`}
                 style={{ flex: 1, padding: '0.5rem 0.7rem', fontSize: '0.85rem' }}
                 disabled={!currentSong}
               >
