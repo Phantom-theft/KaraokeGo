@@ -21,8 +21,10 @@ import {
   Info,
 } from 'lucide-react';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { db } from '../services/firebase';
 import { sendContactMessage } from '../services/feedback';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp';
 
 export type InfoModalType = 'terms' | 'privacy' | 'help' | 'updates' | 'report' | 'feedback';
 export type InfoModalTab = InfoModalType;
@@ -453,18 +455,25 @@ export const ReportModal: React.FC<{
 
                 <div className="info-form-row-3">
                   <div className="form-field">
-                    <label className="form-label" htmlFor="reportRoomCodeInput">
+                    <span className="form-label" id="reportRoomCodeLabel">
                       Room Code <span className="info-label-opt">(Optional)</span>
-                    </label>
-                    <input
-                      id="reportRoomCodeInput"
-                      type="text"
-                      maxLength={6}
-                      placeholder="e.g. ABCD"
+                    </span>
+                    <InputOTP
+                      maxLength={4}
                       value={reportRoomCode}
-                      onChange={(e) => setReportRoomCode(e.target.value.toUpperCase())}
-                      className="setup-input"
-                    />
+                      onChange={(value) => setReportRoomCode(value.toUpperCase())}
+                      pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                      aria-label="Room code"
+                      containerClassName="info-report-otp"
+                      otpSize="sm"
+                    >
+                      <InputOTPGroup otpSize="sm">
+                        <InputOTPSlot index={0} otpSize="sm" />
+                        <InputOTPSlot index={1} otpSize="sm" />
+                        <InputOTPSlot index={2} otpSize="sm" />
+                        <InputOTPSlot index={3} otpSize="sm" />
+                      </InputOTPGroup>
+                    </InputOTP>
                   </div>
 
                   <div className="form-field">
