@@ -170,18 +170,18 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
       <footer className="landing-footer">
         <div className="landing-footer-inner landing-footer-inner--clean">
           <div className="landing-footer-brand">
-            <img
-              src={brandLogo}
-              alt=""
-              width={36}
-              height={36}
-              className="landing-footer-logo"
-              aria-hidden="true"
-            />
-            <div>
+            <div className="landing-footer-brand-main">
+              <img
+                src={brandLogo}
+                alt=""
+                width={30}
+                height={30}
+                className="landing-footer-logo"
+                aria-hidden="true"
+              />
               <p className="landing-footer-name">Karaoke Go</p>
-              <p className="landing-footer-tag">Host the stage. Guests run the queue.</p>
             </div>
+            <p className="landing-footer-tag">Host the stage. Guests run the queue.</p>
           </div>
 
           <div className="landing-footer-links-row">
