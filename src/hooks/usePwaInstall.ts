@@ -16,44 +16,66 @@ function isIosDevice(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
+let deferredPromptCache: BeforeInstallPromptEvent | null = null;
+let installedCache = false;
+let captureStarted = false;
+const subscribers = new Set<() => void>();
+
+function notifySubscribers() {
+  subscribers.forEach((fn) => fn());
+}
+
+/** Capture beforeinstallprompt once so it survives leaving the landing page. */
+export function initPwaInstallCapture() {
+  if (captureStarted || typeof window === 'undefined') return;
+  captureStarted = true;
+
+  if (isStandaloneMode()) {
+    installedCache = true;
+  }
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPromptCache = event as BeforeInstallPromptEvent;
+    notifySubscribers();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installedCache = true;
+    deferredPromptCache = null;
+    notifySubscribers();
+  });
+
+  const standaloneMedia = window.matchMedia('(display-mode: standalone)');
+  standaloneMedia.addEventListener('change', () => {
+    if (isStandaloneMode()) {
+      installedCache = true;
+      deferredPromptCache = null;
+      notifySubscribers();
+    }
+  });
+}
+
 export function usePwaInstall() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstalled, setIsInstalled] = useState(() => isStandaloneMode());
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(
+    () => deferredPromptCache,
+  );
+  const [isInstalled, setIsInstalled] = useState(() => installedCache || isStandaloneMode());
   const [isIos] = useState(() => isIosDevice());
   const [showIosInstructions, setShowIosInstructions] = useState(false);
 
   useEffect(() => {
-    if (isStandaloneMode()) {
-      setIsInstalled(true);
-    }
+    initPwaInstallCapture();
 
-    const onBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
-      event.preventDefault();
-      setDeferredPrompt(event);
+    const syncFromCache = () => {
+      setDeferredPrompt(deferredPromptCache);
+      setIsInstalled(installedCache || isStandaloneMode());
     };
 
-    const onAppInstalled = () => {
-      setIsInstalled(true);
-      setDeferredPrompt(null);
-      setShowIosInstructions(false);
-    };
-
-    const standaloneMedia = window.matchMedia('(display-mode: standalone)');
-    const onDisplayModeChange = () => {
-      if (isStandaloneMode()) {
-        setIsInstalled(true);
-        setDeferredPrompt(null);
-      }
-    };
-
-    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-    window.addEventListener('appinstalled', onAppInstalled);
-    standaloneMedia.addEventListener('change', onDisplayModeChange);
-
+    syncFromCache();
+    subscribers.add(syncFromCache);
     return () => {
-      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', onAppInstalled);
-      standaloneMedia.removeEventListener('change', onDisplayModeChange);
+      subscribers.delete(syncFromCache);
     };
   }, []);
 
@@ -67,10 +89,13 @@ export function usePwaInstall() {
     if (deferredPrompt) {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
+      deferredPromptCache = null;
       setDeferredPrompt(null);
       if (outcome === 'accepted') {
+        installedCache = true;
         setIsInstalled(true);
       }
+      notifySubscribers();
       return;
     }
 

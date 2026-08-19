@@ -6,7 +6,10 @@ import { HostView } from './components/views/HostView';
 import { ParticipantView } from './components/views/ParticipantView';
 import { OfflineView } from './components/views/OfflineView';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
+import { initPwaInstallCapture } from './hooks/usePwaInstall';
 import './App.css';
+
+initPwaInstallCapture();
 
 type AppView = 'landing' | 'host-setup' | 'join-setup' | 'host' | 'participant';
 
