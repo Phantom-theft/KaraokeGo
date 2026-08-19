@@ -66,7 +66,7 @@ function runThemeTransition(update: () => void) {
       update();
       window.setTimeout(() => {
         root.classList.remove('theme-switching');
-      }, 850);
+      }, 280);
     });
   });
 }

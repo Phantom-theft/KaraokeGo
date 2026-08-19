@@ -233,30 +233,30 @@ html {
   background-color: var(--bg-main);
   height: auto;
   transition:
-    --bg-main 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --bg-card 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --bg-inset 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --bg-stage 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --accent 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --action 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --action-hover 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --text-primary 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --text-secondary 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --text-muted 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --host-panel 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --input-bg 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --input-bg-focus 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --chip-bg 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --chip-bg-strong 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --list-bg 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --choice-bg 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --surface 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --surface-strong 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --border-soft 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --glow-action 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    --glow-accent 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    --bg-main 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --bg-card 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --bg-inset 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --bg-stage 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --accent 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --action 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --action-hover 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --text-primary 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --text-secondary 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --text-muted 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --host-panel 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --input-bg 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --input-bg-focus 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --chip-bg 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --chip-bg-strong 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --list-bg 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --choice-bg 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --surface 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --surface-strong 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --border-soft 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --glow-action 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    --glow-accent 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
@@ -272,7 +272,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: relative;
-  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1), color 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Fixed visuals on a pseudo-layer — avoids background-attachment: fixed breaking touchpad scroll */
@@ -288,7 +288,7 @@ body::before {
     radial-gradient(ellipse 55% 40% at 92% 88%, color-mix(in srgb, var(--glow-accent) 12%, transparent), transparent 50%);
   background-repeat: no-repeat;
   background-size: cover;
-  transition: background-color 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #root,
@@ -747,7 +747,7 @@ button {
     radial-gradient(ellipse 55% 40% at 90% 80%, color-mix(in srgb, var(--glow-accent) 14%, transparent), transparent 50%);
   background-repeat: no-repeat;
   background-size: cover;
-  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .landing-page.is-exiting {
@@ -2242,7 +2242,7 @@ button {
     radial-gradient(ellipse 50% 40% at 100% 100%, color-mix(in srgb, var(--glow-accent) 12%, transparent), transparent 50%);
   background-repeat: no-repeat;
   background-size: cover;
-  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .setup-page.is-exiting {
@@ -2343,9 +2343,9 @@ button {
   flex-shrink: 0;
   overflow: hidden;
   transition:
-    background-color 0.75s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.75s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.75s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.2s ease;
 }
 
@@ -2361,7 +2361,7 @@ button {
 
 .theme-toggle-icon {
   display: inline-flex;
-  animation: themeIconIn 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: themeIconIn 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes themeIconIn {
@@ -2398,12 +2398,12 @@ body,
 .search-modal-box,
 .theme-toggle {
   transition:
-    background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    fill 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    stroke 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    fill 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    stroke 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html.theme-switching,
@@ -2412,8 +2412,8 @@ html.theme-switching body::before,
 html.theme-switching .landing-page::before,
 html.theme-switching .setup-page::before {
   transition:
-    background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
