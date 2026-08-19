@@ -37,6 +37,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
   const [hostAddedSongId, setHostAddedSongId] = useState<string | null>(null);
   const [isExiting, setIsExiting] = useState(false);
   const [exitError, setExitError] = useState<string | null>(null);
+  const [queueNotice, setQueueNotice] = useState<string | null>(null);
   const [suggestedSongs, setSuggestedSongs] = useState<SongSearchResult[]>(HOST_SUGGESTED_SONGS);
 
   useEffect(() => {
@@ -178,7 +179,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
     };
   }, []);
 
-  const handleAddSong = (song: SongSearchResult) => {
+  const handleAddSong = async (song: SongSearchResult) => {
 
     const songData: Song = {
       id: song.id,
@@ -187,7 +188,7 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
       thumbnail: song.thumbnail,
       duration: song.duration,
     };
-    addToQueue(songData, `${userName} (Host)`);
+    await addToQueue(songData, `${userName} (Host)`);
   };
 
   // Opening search pauses the current song so audio doesn't keep playing
@@ -780,6 +781,11 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
               <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.55px', color: 'var(--accent)', marginBottom: '0.5rem' }}>
                 Suggest Song
               </div>
+              {queueNotice && (
+                <div className="setup-error" role="alert" style={{ marginBottom: '0.5rem', fontSize: '0.78rem' }}>
+                  {queueNotice}
+                </div>
+              )}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
@@ -816,9 +822,17 @@ export const HostView: React.FC<HostViewProps> = ({ roomCode, userId, userName, 
                         <button
                           onClick={() => {
                             if (isAdded) return;
-                            handleAddSong(song as any);
-                            setHostAddedSongId(song.id);
-                            setTimeout(() => setHostAddedSongId(null), 2000);
+                            void (async () => {
+                              try {
+                                setQueueNotice(null);
+                                await handleAddSong(song);
+                                setHostAddedSongId(song.id);
+                                setTimeout(() => setHostAddedSongId(null), 2000);
+                              } catch (err: unknown) {
+                                const message = err instanceof Error ? err.message : 'Could not add that song.';
+                                setQueueNotice(message);
+                              }
+                            })();
                           }}
                           className="button-primary"
                           style={{

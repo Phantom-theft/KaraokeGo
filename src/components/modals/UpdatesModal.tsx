@@ -5,7 +5,7 @@ import {
   AlertTriangle,
   RefreshCw,
 } from 'lucide-react';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { ModalPortal, useModalBehavior } from './modalUtils';
 
@@ -31,7 +31,7 @@ export const UpdatesModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
     if (!isOpen) return;
     setLoading(true);
     setError(null);
-    const q = query(collection(db, 'updates'), orderBy('order', 'asc'));
+    const q = query(collection(db, 'updates'), orderBy('order', 'asc'), limit(50));
     getDocs(q)
       .then((snap) => {
         const data = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as ChangelogEntry));

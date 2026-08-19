@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import fs from 'node:fs'
+import { rejectIfNotAllowedInnertube } from './server/innertubeGuard.mjs'
 
 const packageJson = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf-8'))
 const appVersion = packageJson.version || '1.0.0'
@@ -15,6 +16,15 @@ export default defineConfig({
     'import.meta.env.PACKAGE_VERSION': JSON.stringify(appVersion),
   },
   plugins: [
+    {
+      name: 'innertube-rate-limit',
+      configureServer(server) {
+        server.middlewares.use('/api/innertube', (req, res, next) => {
+          if (rejectIfNotAllowedInnertube(req, res)) return
+          next()
+        })
+      },
+    },
     react(),
     tailwindcss(),
     VitePWA({

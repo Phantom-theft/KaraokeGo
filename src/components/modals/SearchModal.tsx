@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { searchKaraokeTracks, filterEmbeddableSongs, type SongSearchResult } from '../../services/youtube';
 import { Wave } from '../ui/wave';
+import { LIMITS } from '../../lib/limits';
+import { RateLimitError } from '../../lib/rateLimit';
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddSong: (song: SongSearchResult) => void;
+  onAddSong: (song: SongSearchResult) => void | Promise<void>;
   buttonLabel?: string;
 }
 
@@ -72,6 +74,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const [popularSongs, setPopularSongs] = useState<SongSearchResult[]>(POPULAR_SUGGESTIONS);
   const [isSearching, setIsSearching] = useState(false);
   const [addedSongId, setAddedSongId] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
 
   const resultsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -135,30 +139,57 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
     if (!searchQuery.trim()) {
       setSearchResults([]);
+      setSearchError(null);
       return;
     }
 
+    if (searchQuery.trim().length < LIMITS.search.minQueryLength) {
+      setSearchResults([]);
+      setSearchError(`Type at least ${LIMITS.search.minQueryLength} characters to search.`);
+      setIsSearching(false);
+      return;
+    }
+
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
       setIsSearching(true);
+      setSearchError(null);
       try {
-        const results = await searchKaraokeTracks(searchQuery);
+        const results = await searchKaraokeTracks(searchQuery, controller.signal);
+        if (controller.signal.aborted) return;
         setSearchResults(results);
       } catch (err) {
+        if (controller.signal.aborted) return;
         console.error('Search error:', err);
+        setSearchResults([]);
+        setSearchError(
+          err instanceof RateLimitError
+            ? err.message
+            : 'Could not search songs right now. Please try again.',
+        );
       } finally {
-        setIsSearching(false);
+        if (!controller.signal.aborted) setIsSearching(false);
       }
-    }, 450);
+    }, LIMITS.search.debounceMs);
 
-    return () => clearTimeout(timer);
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
   }, [searchQuery]);
 
-  const handleAdd = (song: SongSearchResult) => {
-    onAddSong(song);
-    setAddedSongId(song.id);
-    setTimeout(() => {
-      setAddedSongId(null);
-    }, 2000);
+  const handleAdd = async (song: SongSearchResult) => {
+    setAddError(null);
+    try {
+      await Promise.resolve(onAddSong(song));
+      setAddedSongId(song.id);
+      setTimeout(() => {
+        setAddedSongId(null);
+      }, 2000);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Could not add that song. Please try again.';
+      setAddError(message);
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -220,6 +251,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           />
         </div>
 
+        {(searchError || addError) && (
+          <div className="setup-error" role="alert" style={{ marginBottom: '0.85rem', flexShrink: 0 }}>
+            {addError || searchError}
+          </div>
+        )}
+
         {/* Suggested Quick Search Tags */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginBottom: '1.25rem', flexShrink: 0 }}>
           <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', marginRight: '0.2rem' }}>
@@ -258,7 +295,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             </div>
           )}
 
-          {!isSearching && searchQuery && searchResults.length === 0 && (
+          {!isSearching && searchQuery && searchResults.length === 0 && !searchError && (
             <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-secondary)' }}>
               <p style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0 }}>
                 No karaoke tracks found for "{searchQuery}".

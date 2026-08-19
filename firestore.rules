@@ -1,0 +1,131 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isNonEmptyString(value, maxLen) {
+      return value is string && value.size() > 0 && value.size() <= maxLen;
+    }
+
+    function optionalString(value, maxLen) {
+      return value == null || (value is string && value.size() <= maxLen);
+    }
+
+    function isValidContact() {
+      let d = request.resource.data;
+      return d.keys().hasOnly([
+          'kind', 'name', 'email', 'message', 'category', 'roomCode',
+          'rating', 'severity', 'createdAt', 'userAgent', 'appVersion'
+        ])
+        && isNonEmptyString(d.kind, 20)
+        && isNonEmptyString(d.message, 2000)
+        && d.message.size() >= 10
+        && isNonEmptyString(d.name, 80)
+        && optionalString(d.email, 120)
+        && optionalString(d.category, 80)
+        && optionalString(d.roomCode, 8)
+        && optionalString(d.severity, 40)
+        && optionalString(d.userAgent, 400)
+        && optionalString(d.appVersion, 40)
+        && (d.rating == null || (d.rating is number && d.rating >= 1 && d.rating <= 5))
+        && d.createdAt == request.time;
+    }
+
+    match /rooms/{roomId} {
+      // Querying by room code must use limit(1). Prevents dumping the full rooms list.
+      allow get: if true;
+      allow list: if request.query.limit != null && request.query.limit <= 1;
+
+      allow create: if request.resource.data.keys().hasOnly([
+          'roomCode', 'hostId', 'currentSongId', 'playbackStatus',
+          'currentTime', 'status', 'createdAt'
+        ])
+        && request.resource.data.roomCode is string
+        && request.resource.data.roomCode.matches('^[A-HJ-NP-Z2-9]{4}$')
+        && isNonEmptyString(request.resource.data.hostId, 80)
+        && request.resource.data.status == 'active'
+        && request.resource.data.playbackStatus == 'idle'
+        && request.resource.data.currentTime == 0
+        && request.resource.data.currentSongId == null
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['currentSongId', 'playbackStatus', 'currentTime', 'lastUpdated', 'status', 'endedAt'])
+        && request.resource.data.roomCode == resource.data.roomCode
+        && request.resource.data.hostId == resource.data.hostId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.status in ['active', 'ended']
+        && request.resource.data.playbackStatus in ['idle', 'playing', 'paused']
+        && (request.resource.data.currentTime is number)
+        && request.resource.data.currentTime >= 0
+        && request.resource.data.currentTime <= 86400;
+
+      allow delete: if false;
+
+      match /participants/{participantId} {
+        allow read: if true;
+
+        allow create: if request.resource.data.keys().hasOnly(['username', 'isHost', 'online', 'joinedAt'])
+          && isNonEmptyString(request.resource.data.username, 40)
+          && request.resource.data.isHost is bool
+          && request.resource.data.online is bool
+          && request.resource.data.joinedAt == request.time
+          && (
+            request.resource.data.isHost == false
+            || participantId == get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId
+          );
+
+        allow update: if request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['username', 'online', 'isHost', 'joinedAt'])
+          && isNonEmptyString(request.resource.data.username, 40)
+          && request.resource.data.isHost == resource.data.isHost
+          && request.resource.data.online is bool;
+
+        allow delete: if true;
+      }
+
+      match /queue/{itemId} {
+        allow read: if true;
+
+        allow create: if request.resource.data.keys().hasOnly([
+            'videoId', 'title', 'artist', 'duration', 'requestedBy',
+            'position', 'status', 'addedAt'
+          ])
+          && isNonEmptyString(request.resource.data.videoId, 32)
+          && isNonEmptyString(request.resource.data.title, 200)
+          && isNonEmptyString(request.resource.data.artist, 100)
+          && isNonEmptyString(request.resource.data.requestedBy, 80)
+          && request.resource.data.duration is number
+          && request.resource.data.duration >= 0
+          && request.resource.data.duration <= 86400
+          && request.resource.data.position is number
+          && request.resource.data.position >= 1
+          && request.resource.data.position <= 80
+          && request.resource.data.status in ['playing', 'waiting']
+          && request.resource.data.addedAt == request.time;
+
+        allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status in ['playing', 'waiting'];
+
+        allow delete: if true;
+      }
+    }
+
+    match /feedback/{docId} {
+      allow read: if false;
+      allow create: if isValidContact() && request.resource.data.kind == 'feedback';
+      allow update, delete: if false;
+    }
+
+    match /reports/{docId} {
+      allow read: if false;
+      allow create: if isValidContact() && request.resource.data.kind == 'report';
+      allow update, delete: if false;
+    }
+
+    match /updates/{docId} {
+      allow get: if true;
+      allow list: if request.query.limit != null && request.query.limit <= 50;
+      allow write: if false;
+    }
+  }
+}

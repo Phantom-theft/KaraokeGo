@@ -3,6 +3,9 @@
 // No API key needed. YouTube uses this internally in the browser.
 // ─────────────────────────────────────────────────────────────
 
+import { LIMITS } from '../lib/limits';
+import { RateLimitError, enforceRateLimit } from '../lib/rateLimit';
+
 export interface SongSearchResult {
   id: string;
   title: string;
@@ -106,9 +109,20 @@ export async function filterEmbeddableSongs(
  * Search YouTube using InnerTube API — the same API YouTube's website uses.
  * Results that disallow embedding are filtered out before returning.
  */
-export async function searchKaraokeTracks(userQuery: string): Promise<SongSearchResult[]> {
+export async function searchKaraokeTracks(
+  userQuery: string,
+  signal?: AbortSignal,
+): Promise<SongSearchResult[]> {
   const trimmed = userQuery.trim();
   if (!trimmed) return [];
+  if (trimmed.length < LIMITS.search.minQueryLength) return [];
+
+  enforceRateLimit('search', {
+    max: LIMITS.search.maxPerWindow,
+    windowMs: LIMITS.search.windowMs,
+    persist: 'session',
+    message: 'Too many song searches.',
+  });
 
   const query = `${trimmed} karaoke`;
 
@@ -123,8 +137,12 @@ export async function searchKaraokeTracks(userQuery: string): Promise<SongSearch
           query,
           params: 'EgIQAQ%3D%3D', // filter: videos only
         }),
+        signal,
       });
 
+    if (res.status === 429) {
+      throw new RateLimitError('Too many song searches. Please wait a moment and try again.', 15_000);
+    }
     if (!res.ok) throw new Error(`InnerTube responded with ${res.status}`);
 
     const data = await res.json();
@@ -160,9 +178,9 @@ export async function searchKaraokeTracks(userQuery: string): Promise<SongSearch
         });
 
         // Collect extras so embed filtering still leaves enough results
-        if (results.length >= 30) break;
+        if (results.length >= 20) break;
       }
-      if (results.length >= 30) break;
+      if (results.length >= 20) break;
     }
 
     results.sort((a, b) => (a.isKaraoke === b.isKaraoke ? 0 : a.isKaraoke ? -1 : 1));
@@ -173,7 +191,9 @@ export async function searchKaraokeTracks(userQuery: string): Promise<SongSearch
     );
     return embeddable;
 
-  } catch (e) {
+  } catch (e: any) {
+    if (e instanceof RateLimitError) throw e;
+    if (e?.name === 'AbortError' || signal?.aborted) return [];
     console.error('[InnerTube Search] Failed:', e);
     return [];
   }

@@ -42,7 +42,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
     return () => window.removeEventListener('pagehide', onPageHide);
   }, [leaveRoom]);
 
-  const handleAddSong = (song: SongSearchResult) => {
+  const handleAddSong = async (song: SongSearchResult) => {
     const songData: Song = {
       id: song.id,
       title: song.title,
@@ -50,7 +50,7 @@ export const ParticipantView: React.FC<ParticipantViewProps> = ({
       thumbnail: song.thumbnail,
       duration: song.duration,
     };
-    addToQueue(songData, userName);
+    await addToQueue(songData, userName);
     showToast(`Added "${song.title}" to queue!`);
   };
 

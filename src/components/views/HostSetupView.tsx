@@ -82,10 +82,11 @@ export const HostSetupView: React.FC<HostSetupViewProps> = ({ onHost, onBack }) 
                   id="hostNameInput"
                   type="text"
                   value={hostName}
-                  onChange={(e) => setHostName(e.target.value)}
+                  onChange={(e) => setHostName(e.target.value.slice(0, 32))}
                   placeholder="e.g. Alex"
                   className="setup-input"
                   required
+                  maxLength={32}
                   autoFocus
                 />
               </div>

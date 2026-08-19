@@ -123,10 +123,11 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
                   id="joinNameInput"
                   type="text"
                   value={joinName}
-                  onChange={(e) => setJoinName(e.target.value)}
+                  onChange={(e) => setJoinName(e.target.value.slice(0, 32))}
                   placeholder="e.g. Jordan"
                   className="setup-input"
                   required
+                  maxLength={32}
                 />
               </div>
 
