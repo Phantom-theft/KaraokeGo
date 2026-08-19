@@ -109,8 +109,8 @@ export const HostSetupView: React.FC<HostSetupViewProps> = ({ onHost, onBack }) 
             <p className="setup-info-kicker">What you get</p>
             <h2 className="setup-info-title">Host a live karaoke experience</h2>
             <p className="setup-info-desc">
-              From your laptop or TV screen, manage an unlimited song queue while guests add
-              songs directly from their phones — no app needed.
+              No accounts required join instantly in your browser or install the Karaoke Go app. 
+              Add songs, and the host plays them live on the big screen.
             </p>
 
             <ul className="setup-feature-list">

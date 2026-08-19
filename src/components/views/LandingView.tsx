@@ -151,7 +151,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onSelectHost, onSelect
                   </div>
                   <div className="glass-qr-copy">
                     <span className="glass-qr-label">Scan to join</span>
-                    <span className="glass-qr-hint">Phone guests, no app install</span>
+                    <span className="glass-qr-hint">Join instantly or install Karaoke Go</span>
                   </div>
                 </div>
               </div>

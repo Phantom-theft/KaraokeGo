@@ -141,8 +141,8 @@ export const JoinSetupView: React.FC<JoinSetupViewProps> = ({ onJoin, onBack, in
             <p className="setup-info-kicker">Guest experience</p>
             <h2 className="setup-info-title">Control the party from your phone</h2>
             <p className="setup-info-desc">
-              No downloads, no accounts — open the link in your browser and start adding songs.
-              The host plays them live on the big screen.
+              No accounts required join instantly in your browser or install the Karaoke Go app. 
+              Add songs, and the host plays them live on the big screen.
             </p>
 
             <ul className="setup-feature-list">
